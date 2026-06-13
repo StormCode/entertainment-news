@@ -11,12 +11,8 @@ out/
 build/
 dist/
 
-# Environment
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Environment (wildcard covers all .env* variants)
+.env*
 
 # Logs
 *.log
