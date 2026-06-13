@@ -1,0 +1,294 @@
+/* Edit page — same 3-panel Ghost/Notion layout as /admin/new */
+
+.shell {
+  display: grid;
+  grid-template-columns: 260px 1fr 300px;
+  min-height: 100vh;
+}
+
+/* Left panel */
+.leftPanel {
+  background: var(--paper-2);
+  border-right: 1px solid var(--line);
+  padding: 24px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.panelHeading {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.filmInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.poster {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.posterMissing {
+  width: 100%;
+  aspect-ratio: 2/3;
+  background: var(--line);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.filmTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  font-family: var(--font-serif-tc), serif;
+}
+
+.hint {
+  font-size: 11px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.r2Warning {
+  background: rgba(201, 169, 110, 0.08);
+  border: 1px solid rgba(201, 169, 110, 0.3);
+  border-radius: 4px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.warningText {
+  font-size: 11px;
+  color: var(--gold);
+}
+
+.btnRetry {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  border-radius: 3px;
+  color: var(--gold);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.backdropOverride {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-family: var(--font-sans-tc), sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.input {
+  width: 100%;
+  padding: 7px 10px;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  color: var(--ink);
+  font-size: 12px;
+  outline: none;
+}
+
+.input:focus { border-color: var(--gold); }
+
+.metaSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.metaLabel {
+  font-size: 11px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.metaValue {
+  font-size: 11px;
+  color: var(--ink);
+  word-break: break-all;
+}
+
+.badgePublished {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: rgba(201, 169, 110, 0.15);
+  color: var(--gold);
+  border-radius: 10px;
+}
+
+.badgeDraft {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: var(--line);
+  color: var(--muted);
+  border-radius: 10px;
+}
+
+/* Center editor — light bg (design D7) */
+.editor {
+  --editor-bg: #f5f2ed;
+  --editor-ink: #1a1614;
+  background: var(--editor-bg);
+  display: flex;
+  flex-direction: column;
+  padding: 40px 48px;
+}
+
+.inlineMessage {
+  background: rgba(201, 169, 110, 0.1);
+  border: 1px solid rgba(201, 169, 110, 0.3);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--gold);
+  margin-bottom: 20px;
+}
+
+.titleInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #d0cbc3;
+  padding: 0 0 12px;
+  margin-bottom: 24px;
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--editor-ink);
+  outline: none;
+}
+
+.titleInput::placeholder { color: #b0a898; }
+.titleInput:focus { border-color: #8a7e6c; }
+
+.bodyTextarea {
+  flex: 1;
+  min-height: 600px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  resize: none;
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 16px;
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+  color: var(--editor-ink);
+  outline: none;
+}
+
+.bodyTextarea::placeholder { color: #b0a898; }
+
+.actionBar {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 20px;
+  border-top: 1px solid #d0cbc3;
+  margin-top: 24px;
+}
+
+.btnSave {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid #b0a898;
+  border-radius: 4px;
+  color: var(--editor-ink);
+  font-family: var(--font-sans-tc), sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btnPublish {
+  padding: 10px 24px;
+  background: var(--gold);
+  border: none;
+  border-radius: 4px;
+  color: var(--paper);
+  font-family: var(--font-sans-tc), sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btnPublish:hover { opacity: 0.9; }
+
+.btnUnpublish {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid #d05050;
+  border-radius: 4px;
+  color: #d05050;
+  font-family: var(--font-sans-tc), sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Right preview */
+.rightPanel {
+  background: var(--paper);
+  border-left: 1px solid var(--line);
+  padding: 24px 20px;
+  overflow-y: auto;
+}
+
+.previewContent {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.previewEmpty {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 13px;
+}
+
+.previewPre {
+  white-space: pre-wrap;
+  font-family: var(--font-sans-tc), monospace;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+/* Tablet */
+@media (max-width: 899px) {
+  .shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  .rightPanel { display: none; }
+  .leftPanel { border-right: none; border-bottom: 1px solid var(--line); }
+}

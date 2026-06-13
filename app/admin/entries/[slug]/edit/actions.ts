@@ -1,0 +1,93 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { db } from "@/db";
+import { entries, films } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { recomputeChips } from "@/lib/chips/recompute";
+import { uploadFilmImages } from "@/lib/images/r2-upload";
+
+interface UpdateEntryInput {
+  entryId: number;
+  slug: string;
+  entryTitle: string;
+  titleZh?: string;
+  bodyMd: string;
+  manualBackdropUrl?: string;
+  chips?: Array<{ label: string; kind: string; isLive?: boolean }>;
+  publish?: boolean;
+  unpublish?: boolean;
+  heroFeatured?: boolean;
+}
+
+export async function updateEntry(input: UpdateEntryInput) {
+  const { entryId, slug, entryTitle, titleZh, bodyMd, manualBackdropUrl, chips, publish, unpublish, heroFeatured } = input;
+
+  const now = new Date();
+  const publishedAt = publish ? now : unpublish ? null : undefined;
+
+  await db
+    .update(entries)
+    .set({
+      title: entryTitle,
+      body_md: bodyMd,
+      ...(manualBackdropUrl !== undefined ? { manual_backdrop_url: manualBackdropUrl || null } : {}),
+      ...(publish ? { is_published: true, published_at: publishedAt } : {}),
+      ...(unpublish ? { is_published: false, published_at: null } : {}),
+      ...(heroFeatured !== undefined ? { is_hero_featured: heroFeatured } : {}),
+      updated_at: now,
+    })
+    .where(eq(entries.id, entryId));
+
+  if (chips) {
+    await recomputeChips(entryId, chips.map((c) => ({
+      label: c.label,
+      kind: c.kind as "streaming" | "festival" | "collaborator",
+      is_live: c.isLive ? "1" : "0",
+    })));
+  }
+
+  revalidatePath("/");
+  revalidatePath(`/entries/${slug}`);
+
+  if (publish) {
+    redirect(`/entries/${slug}`);
+  }
+
+  return { ok: true };
+}
+
+export async function retryR2Upload(filmId: number) {
+  const [film] = await db
+    .select({ tmdb_id: films.tmdb_id, backdrop_url: films.backdrop_url, poster_url: films.poster_url })
+    .from(films)
+    .where(eq(films.id, filmId))
+    .limit(1);
+
+  if (!film?.tmdb_id) return { error: "找不到影片" };
+
+  // backdrop_url/poster_url at this point may be raw TMDB paths (not yet R2)
+  const backdropPath = film.backdrop_url?.startsWith("/") ? film.backdrop_url : null;
+  const posterPath = film.poster_url?.startsWith("/") ? film.poster_url : null;
+
+  if (!backdropPath && !posterPath) return { error: "已無待處理的 TMDB 圖片路徑" };
+
+  const { heroUrl, posterUrl } = await uploadFilmImages({
+    tmdbId: film.tmdb_id,
+    backdropTmdbPath: backdropPath,
+    posterTmdbPath: posterPath,
+  });
+
+  if (!heroUrl && !posterUrl) return { error: "R2 上傳失敗，請稍後再試" };
+
+  await db
+    .update(films)
+    .set({
+      ...(heroUrl ? { backdrop_url: heroUrl } : {}),
+      ...(posterUrl ? { poster_url: posterUrl } : {}),
+    })
+    .where(eq(films.id, filmId));
+
+  return { ok: true };
+}

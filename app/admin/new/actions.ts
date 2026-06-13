@@ -7,6 +7,7 @@ import { films, entries } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { fetchTmdbFilm } from "@/lib/tmdb";
 import { recomputeChips } from "@/lib/chips/recompute";
+import { uploadFilmImages } from "@/lib/images/r2-upload";
 
 // Fetch TMDB data for admin autofill
 export async function fetchFilmData(
@@ -58,6 +59,27 @@ export async function saveEntry(input: SaveEntryInput) {
           })
           .returning({ id: films.id });
         filmId = inserted[0].id;
+
+        // Kick off R2 upload in background — entry saves even if this fails (eng D14)
+        uploadFilmImages({
+          tmdbId: tmdbFilm.tmdbId,
+          backdropTmdbPath: tmdbFilm.backdropPath,
+          posterTmdbPath: tmdbFilm.posterPath,
+        })
+          .then(async ({ heroUrl, posterUrl }) => {
+            if (heroUrl || posterUrl) {
+              await db
+                .update(films)
+                .set({
+                  ...(heroUrl ? { backdrop_url: heroUrl } : {}),
+                  ...(posterUrl ? { poster_url: posterUrl } : {}),
+                })
+                .where(eq(films.id, filmId!));
+            }
+          })
+          .catch(() => {
+            // R2 failure is non-fatal — admin shows "圖片待補" (eng D14)
+          });
       }
     }
   }
