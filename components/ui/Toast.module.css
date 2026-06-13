@@ -1,0 +1,26 @@
+.toast {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  background: var(--gold);
+  color: var(--paper);
+  padding: 12px 20px;
+  border-radius: 4px;
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  animation: toast-in 0.2s ease-out;
+  z-index: 9999;
+}
+
+.arrow {
+  color: var(--paper);
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.arrow:visited {
+  color: var(--paper);
+  text-decoration: none;
+}

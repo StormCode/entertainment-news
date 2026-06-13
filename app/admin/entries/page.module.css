@@ -1,0 +1,63 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 48px 40px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Empty state — design review D6 */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 60vh;
+  text-align: center;
+  gap: 12px;
+}
+
+.emptyHeading {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--ink-strong);
+}
+
+.emptyText {
+  font-size: 16px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.ctaButton {
+  display: inline-block;
+  height: 48px;
+  line-height: 48px;
+  padding: 0 24px;
+  background: var(--gold);
+  color: var(--paper);
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.ctaButton:hover { opacity: 0.85; }
+.ctaButton:visited { color: var(--paper); text-decoration: none; }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink-strong);
+}

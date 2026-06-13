@@ -1,0 +1,117 @@
+/* 散場之後 — Design System
+ * Source of truth: DESIGN.md
+ * DO NOT edit tokens here without updating DESIGN.md first.
+ */
+
+:root {
+  /* Surfaces */
+  --paper:         #0c0a08;
+  --paper-2:       #161310;
+
+  /* Text */
+  --ink:           #f1ebdf;
+  --ink-strong:    #ffffff;
+  --muted:         #9c9080; /* WCAG AA: 5.92:1 on --paper-2 */
+
+  /* Accent */
+  --gold:          #c9a96e;
+
+  /* Rules */
+  --line:          #2a2520;
+  --line-strong:   #4a4035;
+
+  /* Component surfaces */
+  --chip:          #1c1815;
+
+  /* Admin only */
+  --editor-bg:     #f5f2ed;
+  --editor-ink:    #1a1714;
+
+  /* Font variables (set by next/font in layout.tsx) */
+  --font-serif-tc: '';
+  --font-sans-tc: '';
+}
+
+/* Reset & base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  /* CJK typography */
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+  font-feature-settings: "chws" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100%;
+  font-family: var(--font-serif-tc), "Noto Serif TC", "Source Han Serif TC", "Songti TC", "PMingLiU", serif;
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.4;
+  color: var(--ink-strong);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:visited {
+  color: var(--gold);
+  text-decoration: underline; /* WCAG 1.4.1: secondary signal beyond colour */
+}
+
+/* Tabular numerals for dates, runtimes, counts */
+.date, .runtime, .count,
+time, [data-tabular] {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-sans-tc), "Noto Sans TC", "PingFang TC", sans-serif;
+}
+
+/* Focus ring — all interactive elements */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* UI text (labels, chips, nav) */
+.ui {
+  font-family: var(--font-sans-tc), "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+/* Skeleton screens */
+@keyframes shimmer {
+  0%   { opacity: 0.6; }
+  50%  { opacity: 0.9; }
+  100% { opacity: 0.6; }
+}
+
+.skeleton {
+  background: var(--paper-2);
+  border-radius: 2px;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Toast animation */
+@keyframes toast-in {
+  from { transform: translateY(8px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}

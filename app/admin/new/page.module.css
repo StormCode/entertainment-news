@@ -1,0 +1,159 @@
+/* Ghost/Notion style: 3-panel admin layout (design review D3 + D7) */
+
+.shell {
+  display: grid;
+  grid-template-columns: 260px 1fr 300px;
+  min-height: 100vh;
+}
+
+/* Left context panel */
+.leftPanel {
+  background: var(--paper-2);
+  border-right: 1px solid var(--line);
+  padding: 24px 20px;
+}
+
+.panelHeading {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 16px;
+}
+
+.tmdbInput { display: flex; flex-direction: column; gap: 8px; }
+
+.label {
+  font-family: var(--font-sans-tc), sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.input {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  color: var(--ink);
+  font-size: 13px;
+  outline: none;
+}
+
+.input:focus { border-color: var(--gold); }
+
+.hint {
+  font-size: 11px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Center editor: light background (design review D7) */
+.editor {
+  background: var(--editor-bg);
+  display: flex;
+  flex-direction: column;
+  padding: 40px 48px;
+  gap: 0;
+}
+
+.titleInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #d0cbc3;
+  padding: 0 0 12px;
+  margin-bottom: 24px;
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--editor-ink);
+  outline: none;
+}
+
+.titleInput::placeholder { color: #b0a898; }
+.titleInput:focus { border-color: #8a7e6c; }
+
+.bodyTextarea {
+  flex: 1;
+  min-height: 600px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  resize: none;
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 16px;
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+  color: var(--editor-ink);
+  outline: none;
+}
+
+.bodyTextarea::placeholder { color: #b0a898; }
+
+/* Action bar */
+.actionBar {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 20px;
+  border-top: 1px solid #d0cbc3;
+  margin-top: 24px;
+}
+
+.btnDraft {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid #b0a898;
+  border-radius: 4px;
+  color: var(--editor-ink);
+  font-family: var(--font-sans-tc), sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btnPublish {
+  padding: 10px 24px;
+  background: var(--gold);
+  border: none;
+  border-radius: 4px;
+  color: var(--paper);
+  font-family: var(--font-sans-tc), sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btnPublish:hover { opacity: 0.9; }
+
+/* Right preview panel */
+.rightPanel {
+  background: var(--paper);
+  border-left: 1px solid var(--line);
+  padding: 24px 20px;
+  overflow-y: auto;
+}
+
+.previewContent {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.previewEmpty {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* Tablet: collapse to single column */
+@media (max-width: 899px) {
+  .shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  .rightPanel { display: none; } /* hide preview on tablet */
+  .leftPanel { border-right: none; border-bottom: 1px solid var(--line); }
+}
