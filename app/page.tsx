@@ -1,10 +1,52 @@
 import { Suspense } from "react";
 import { Masthead } from "@/components/layout/Masthead";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { EntryCard } from "@/components/entries/EntryCard";
 import { HeroSkeleton, EntryCardSkeleton, SidebarSkeleton } from "@/components/skeleton";
+import { getPublishedEntries, getHeroEntries } from "@/lib/queries/entries";
+import { getActiveFestivals, getComingSoonStreaming, getExpiringSoonStreaming } from "@/lib/queries/sidebar";
 import styles from "./page.module.css";
 
-// ISR: revalidate every 4 hours; on-publish revalidatePath() overrides immediately (D3)
+// ISR: revalidate every 4 hours; on-publish revalidatePath() overrides immediately (eng D3)
 export const revalidate = 14400;
+
+async function EntryGrid() {
+  let entries: Awaited<ReturnType<typeof getPublishedEntries>> = [];
+  try {
+    entries = await getPublishedEntries(20);
+  } catch {
+    // DB unavailable at build time or cold start — show empty state
+  }
+
+  if (entries.length === 0) {
+    return (
+      <div className={styles.entryGrid}>
+        <p className={styles.emptyState}>暫無文章。</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.entryGrid}>
+      {entries.map((entry) => (
+        <EntryCard key={entry.id} entry={entry} />
+      ))}
+    </div>
+  );
+}
+
+async function SidebarData() {
+  try {
+    const [festivals, comingSoon, expiringSoon] = await Promise.all([
+      getActiveFestivals(),
+      getComingSoonStreaming(),
+      getExpiringSoonStreaming(),
+    ]);
+    return <Sidebar festivals={festivals} comingSoon={comingSoon} expiringSoon={expiringSoon} />;
+  } catch {
+    return <Sidebar festivals={[]} comingSoon={[]} expiringSoon={[]} />;
+  }
+}
 
 export default function HomePage() {
   return (
@@ -14,15 +56,14 @@ export default function HomePage() {
       {/* Hero — full-bleed 21:9 */}
       <section className={styles.heroSection} aria-label="精選文章">
         <Suspense fallback={<HeroSkeleton />}>
-          {/* HeroCarousel will be imported once DB is wired */}
           <HeroSkeleton />
+          {/* HeroCarousel: implemented in Day 3 once entry count > 0 */}
         </Suspense>
       </section>
 
-      {/* Main grid: entry wall + sidebar */}
+      {/* Main grid: entry wall (1fr) + sidebar (280px) */}
       <main className={styles.main}>
         <div className={styles.grid}>
-          {/* Entry poster wall */}
           <section className={styles.entries} aria-label="文章牆">
             <Suspense
               fallback={
@@ -33,17 +74,13 @@ export default function HomePage() {
                 </div>
               }
             >
-              <div className={styles.entryGrid}>
-                {/* EntryGrid component will go here */}
-                <p className={styles.emptyState}>暫無文章。</p>
-              </div>
+              <EntryGrid />
             </Suspense>
           </section>
 
-          {/* Sidebar */}
           <aside className={styles.sidebar} aria-label="側欄資訊">
             <Suspense fallback={<SidebarSkeleton />}>
-              <SidebarSkeleton />
+              <SidebarData />
             </Suspense>
           </aside>
         </div>

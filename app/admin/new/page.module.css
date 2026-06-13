@@ -148,6 +148,34 @@
   font-size: 13px;
 }
 
+/* Film preview in left panel */
+.filmPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.poster {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.filmTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  font-family: var(--font-serif-tc), serif;
+}
+
+.error {
+  font-size: 12px;
+  color: #e57373;
+  margin-top: 4px;
+}
+
 /* Tablet: collapse to single column */
 @media (max-width: 899px) {
   .shell {

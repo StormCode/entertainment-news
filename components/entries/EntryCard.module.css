@@ -1,0 +1,75 @@
+.card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.poster {
+  position: relative;
+  aspect-ratio: 2/3;
+  width: 100%;
+  overflow: hidden;
+  background: var(--paper-2);
+  margin-bottom: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  border-top: 1px solid var(--gold);
+}
+
+.posterImg {
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .posterImg {
+  transform: scale(1.03);
+}
+
+.posterPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: var(--paper-2);
+}
+
+.info {
+  padding: 0 2px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.3;
+  color: var(--ink-strong);
+  margin-bottom: 6px;
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+}
+
+.card:hover .title {
+  color: var(--gold);
+}
+
+.meta {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 8px;
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+}
+
+.date {
+  font-variant-numeric: tabular-nums;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.caption {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.6;
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+}
