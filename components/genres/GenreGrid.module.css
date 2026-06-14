@@ -1,0 +1,125 @@
+/* Genre cards — 3×2 grid, grayscale stills + per-genre color filter */
+
+.section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 40px 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────── */
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  aspect-ratio: 3 / 2;
+  display: flex;
+  align-items: flex-end;
+  text-decoration: none;
+  cursor: pointer;
+  /* Contain mix-blend-mode within card boundaries */
+  isolation: isolate;
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ── Grayscale background image (scales on hover) ───────────────── */
+
+.cardBg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  /* Ensure the source image renders as grayscale */
+  filter: grayscale(100%);
+  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.card:hover .cardBg,
+.card:focus-visible .cardBg {
+  transform: scale(1.08);
+}
+
+/* ── Color filter layer (mix-blend-mode: color)
+      Preserves photo luminance, applies genre hue ──────────────── */
+
+.cardColorFilter {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: color;
+  opacity: 0.82;
+  transition: opacity 0.3s;
+}
+
+.card:hover .cardColorFilter,
+.card:focus-visible .cardColorFilter {
+  opacity: 1;
+}
+
+/* ── Dark gradient for text legibility ──────────────────────────── */
+
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(8, 6, 4, 0.80) 0%,
+    rgba(8, 6, 4, 0.22) 55%,
+    transparent 100%
+  );
+}
+
+/* ── Label ──────────────────────────────────────────────────────── */
+
+.cardLabel {
+  position: relative;
+  z-index: 1;
+  padding: 0 18px 18px;
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.90);
+  letter-spacing: 0.08em;
+  transition: color 0.22s;
+}
+
+.card:hover .cardLabel,
+.card:focus-visible .cardLabel {
+  color: var(--gold);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 899px) {
+  .section {
+    padding: 40px 32px 0;
+  }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 599px) {
+  .section {
+    padding: 28px 20px 0;
+  }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .cardLabel {
+    font-size: 15px;
+    padding: 0 14px 14px;
+  }
+}

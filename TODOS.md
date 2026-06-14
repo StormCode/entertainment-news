@@ -6,11 +6,16 @@ Deferred from plan reviews. Each item has enough context to be picked up cold.
 
 ## Engineering Review TODOs (from /plan-eng-review 2026-06-13)
 
-### TODO-E1: /admin/health pipeline status page
-**What:** Build a `/admin/health` page that shows `last_verified_at` per pipeline job (TMDB sync, backdrop fetch, hero feed compute, chip recompute, nightly backup).
-**Why:** Design doc requires surfacing pipeline health when a cron hasn't run in 24h. Without this page the editor has no visibility into whether the data layer is functioning.
-**Target:** v0.1 (not blocking v0 launch, but must exist before the first time a cron fails silently).
-**Context:** GHA cron drift can skip jobs. The 24h alert threshold was agreed in the pipeline design.
+### ~~TODO-E1: /admin/health pipeline status page~~ ✓ UPGRADED TO v0 (2026-06-14 CEO review)
+**What:** Build a `/admin/health` page that shows pipeline status per job (nightly-backup, restore-test). Data from new `pipeline_health` table written by GHA via `/api/pipeline-health` POST route.
+**Why:** Must exist before the first cron failure — upgraded from v0.1 to v0 mandatory in CEO review.
+**Target:** v0 (before launch). See CEO plan: `~/.gstack/projects/StormCode-entertainment-news/ceo-plans/2026-06-14-v0-launch-and-genre.md`
+**Spec:**
+- `pipeline_health` table: `(name TEXT PK, last_run_at TIMESTAMPTZ, status TEXT)` — status: `'success' | 'failure'`
+- `/api/pipeline-health` POST route: `Authorization: Bearer $PIPELINE_HEALTH_SECRET`; UPSERT on name; 401 if bad token
+- `/admin/health` page: `export const dynamic = 'force-dynamic'`; shows red/orange/green per row; alert thresholds: nightly backup >48h, restore-test >14 days
+- Admin auth: Vercel Deployment Protection (no code needed)
+- Add `PIPELINE_HEALTH_SECRET=` to `.env.example`
 
 ### ~~TODO-E2: scripts/verify-restore.sh~~ ✓ DONE (Day 6)
 Delivered: `scripts/verify-restore.sh`, `.github/workflows/nightly-backup.yml`,

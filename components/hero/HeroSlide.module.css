@@ -1,0 +1,131 @@
+/* Hero — full-bleed 21:9, dark overlay, bottom-left content */
+
+.hero {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: var(--paper-2);
+}
+
+/* ── Backdrop ──────────────────────────────────────────────────── */
+
+.bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.hero:hover .bg,
+.hero:focus-visible .bg {
+  transform: scale(1.03);
+}
+
+/* ── Dark gradient overlay ─────────────────────────────────────── */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(8, 6, 4, 0.92) 0%,
+    rgba(8, 6, 4, 0.55) 35%,
+    rgba(8, 6, 4, 0.15) 65%,
+    transparent 100%
+  );
+}
+
+/* ── Content (bottom-left) ─────────────────────────────────────── */
+
+.content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 36px 56px;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filmTitle {
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  opacity: 0.9;
+}
+
+.title {
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: clamp(22px, 3vw, 38px);
+  font-weight: 700;
+  color: var(--ink-strong);
+  line-height: 1.35;
+  letter-spacing: 0.03em;
+}
+
+.cta {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+  transition: border-color 0.2s;
+  align-self: flex-start;
+}
+
+.hero:hover .cta,
+.hero:focus-visible .cta {
+  border-bottom-color: var(--gold);
+}
+
+.hero:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+}
+
+/* ── Tablet: 16:9 ──────────────────────────────────────────────── */
+
+@media (max-width: 899px) {
+  .hero {
+    aspect-ratio: 16 / 9;
+  }
+  .content {
+    padding: 28px 32px;
+    max-width: 100%;
+  }
+  .title {
+    font-size: clamp(20px, 3.5vw, 30px);
+  }
+}
+
+/* ── Mobile: 4:3 ───────────────────────────────────────────────── */
+
+@media (max-width: 599px) {
+  .hero {
+    aspect-ratio: 4 / 3;
+  }
+  .content {
+    padding: 20px;
+    gap: 8px;
+  }
+  .title {
+    font-size: 20px;
+  }
+  .cta {
+    font-size: 11px;
+  }
+}

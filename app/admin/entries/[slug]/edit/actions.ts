@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { entries, films } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { recomputeChips } from "@/lib/chips/recompute";
+import { recomputeChips, recomputeGenreChips } from "@/lib/chips/recompute";
 import { uploadFilmImages } from "@/lib/images/r2-upload";
 
 interface UpdateEntryInput {
@@ -16,13 +16,14 @@ interface UpdateEntryInput {
   bodyMd: string;
   manualBackdropUrl?: string;
   chips?: Array<{ label: string; kind: string; isLive?: boolean }>;
+  genreLabels?: string[];
   publish?: boolean;
   unpublish?: boolean;
   heroFeatured?: boolean;
 }
 
 export async function updateEntry(input: UpdateEntryInput) {
-  const { entryId, slug, entryTitle, titleZh, bodyMd, manualBackdropUrl, chips, publish, unpublish, heroFeatured } = input;
+  const { entryId, slug, entryTitle, titleZh, bodyMd, manualBackdropUrl, chips, genreLabels, publish, unpublish, heroFeatured } = input;
 
   const now = new Date();
   const publishedAt = publish ? now : unpublish ? null : undefined;
@@ -46,6 +47,10 @@ export async function updateEntry(input: UpdateEntryInput) {
       kind: c.kind as "streaming" | "festival" | "collaborator",
       is_live: c.isLive ? "1" : "0",
     })));
+  }
+
+  if (genreLabels !== undefined) {
+    await recomputeGenreChips(entryId, genreLabels);
   }
 
   revalidatePath("/");

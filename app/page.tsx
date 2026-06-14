@@ -2,8 +2,10 @@ import { Suspense } from "react";
 import { Masthead } from "@/components/layout/Masthead";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { EntryCard } from "@/components/entries/EntryCard";
+import { GenreGrid } from "@/components/genres/GenreGrid";
+import { HeroSlide } from "@/components/hero/HeroSlide";
 import { HeroSkeleton, EntryCardSkeleton, SidebarSkeleton } from "@/components/skeleton";
-import { getPublishedEntries, getHeroEntries } from "@/lib/queries/entries";
+import { getPublishedEntries, getHeroEntry } from "@/lib/queries/entries";
 import { getActiveFestivals, getComingSoonStreaming, getExpiringSoonStreaming } from "@/lib/queries/sidebar";
 import styles from "./page.module.css";
 
@@ -35,6 +37,16 @@ async function EntryGrid() {
   );
 }
 
+async function Hero() {
+  let entry = null;
+  try {
+    entry = await getHeroEntry();
+  } catch {
+    // DB unavailable — show placeholder without crashing
+  }
+  return <HeroSlide entry={entry} />;
+}
+
 async function SidebarData() {
   try {
     const [festivals, comingSoon, expiringSoon] = await Promise.all([
@@ -53,13 +65,15 @@ export default function HomePage() {
     <>
       <Masthead />
 
-      {/* Hero — full-bleed 21:9 */}
+      {/* Hero — full-bleed 21:9 (desktop) / 16:9 (tablet) / 4:3 (mobile) */}
       <section className={styles.heroSection} aria-label="精選文章">
         <Suspense fallback={<HeroSkeleton />}>
-          <HeroSkeleton />
-          {/* HeroCarousel: implemented in Day 3 once entry count > 0 */}
+          <Hero />
         </Suspense>
       </section>
+
+      {/* Genre cards — 6 categories, static film-still backgrounds */}
+      <GenreGrid />
 
       {/* Main grid: entry wall (1fr) + sidebar (280px) */}
       <main className={styles.main}>

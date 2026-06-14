@@ -70,6 +70,54 @@ export async function getPublishedEntries(limit = 20): Promise<EntryWithFilm[]> 
   }));
 }
 
+export async function getHeroEntry(): Promise<EntryWithFilm | null> {
+  const rows = await db
+    .select({
+      id: entries.id,
+      slug: entries.slug,
+      title: entries.title,
+      backdropUrl: entries.backdrop_url,
+      manualBackdropUrl: entries.manual_backdrop_url,
+      publishedAt: entries.published_at,
+      filmTitle: films.title,
+      filmTitleZh: films.title_zh,
+      filmDirector: films.director,
+      filmRuntime: films.runtime_min,
+      filmPosterUrl: films.poster_url,
+    })
+    .from(entries)
+    .leftJoin(films, eq(entries.primary_film_id, films.id))
+    .where(eq(entries.is_published, true))
+    .orderBy(desc(entries.is_hero_featured), desc(entries.published_at))
+    .limit(1);
+
+  if (!rows[0]) return null;
+
+  const genreChips = await db
+    .select()
+    .from(entryChips)
+    .where(and(eq(entryChips.entry_id, rows[0].id), eq(entryChips.kind, "genre")));
+
+  const r = rows[0];
+  return {
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,  // manual takes priority
+    publishedAt: r.publishedAt,
+    film: r.filmTitle
+      ? {
+          title: r.filmTitle,
+          titleZh: r.filmTitleZh,
+          director: r.filmDirector,
+          runtimeMin: r.filmRuntime,
+          posterUrl: r.filmPosterUrl,
+        }
+      : null,
+    chips: genreChips.map((c) => ({ label: c.label, kind: c.kind, isLive: c.is_live })),
+  };
+}
+
 export async function getHeroEntries(): Promise<EntryWithFilm[]> {
   const rows = await db
     .select({

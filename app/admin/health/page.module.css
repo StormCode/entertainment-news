@@ -1,0 +1,118 @@
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+.heading {
+  font-family: var(--font-sans-tc), sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 28px;
+}
+
+/* ── Table ──────────────────────────────────────────────────────── */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans-tc), sans-serif;
+  font-size: 13px;
+}
+
+.th {
+  text-align: left;
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.tr {
+  border-bottom: 1px solid var(--line);
+}
+
+.tr:last-child {
+  border-bottom: none;
+}
+
+.td {
+  padding: 16px;
+  vertical-align: middle;
+  color: var(--ink);
+}
+
+/* ── Pipeline name cell ─────────────────────────────────────────── */
+
+.pipelineName {
+  display: block;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+
+.pipelineSlug {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: ui-monospace, "SF Mono", monospace;
+}
+
+/* ── Time cell ──────────────────────────────────────────────────── */
+
+.relativeTime {
+  display: block;
+  color: var(--ink);
+}
+
+.absoluteTime {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.neverRun {
+  color: var(--muted);
+}
+
+/* ── Threshold cell ─────────────────────────────────────────────── */
+
+.threshold {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* ── Status badge ───────────────────────────────────────────────── */
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.badge_ok {
+  background: rgba(40, 160, 80, 0.15);
+  color: #3db86a;
+}
+
+.badge_late {
+  background: rgba(201, 169, 110, 0.15);
+  color: var(--gold);
+}
+
+.badge_failed {
+  background: rgba(200, 60, 60, 0.15);
+  color: #e05050;
+}
+
+.badge_never {
+  background: rgba(201, 169, 110, 0.10);
+  color: var(--gold);
+}

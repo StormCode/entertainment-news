@@ -5,6 +5,7 @@ import type { Entry } from "@/db/schema/entries";
 import type { Film } from "@/db/schema/films";
 import { Toast } from "@/components/ui/Toast";
 import { updateEntry, retryR2Upload } from "./actions";
+import { GENRES, type GenreLabel } from "@/lib/constants/genres";
 import styles from "./edit.module.css";
 
 interface EntryChip {
@@ -23,10 +24,19 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
   const [entryTitle, setEntryTitle] = useState(entry.title);
   const [bodyMd, setBodyMd] = useState(entry.body_md);
   const [manualBackdropUrl, setManualBackdropUrl] = useState(entry.manual_backdrop_url ?? "");
+  const [selectedGenres, setSelectedGenres] = useState<GenreLabel[]>(
+    () => initialChips.filter((c) => c.kind === "genre").map((c) => c.label as GenreLabel)
+  );
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
   const [r2Pending, startR2] = useTransition();
+
+  function toggleGenre(label: GenreLabel) {
+    setSelectedGenres((prev) =>
+      prev.includes(label) ? prev.filter((g) => g !== label) : [...prev, label]
+    );
+  }
 
   const heroUrl = entry.backdrop_url ?? film?.backdrop_url;
   const posterUrl = film?.poster_url;
@@ -40,6 +50,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
         entryTitle,
         bodyMd,
         manualBackdropUrl,
+        genreLabels: selectedGenres,
       });
       if ("ok" in result) setMessage("儲存成功");
     });
@@ -53,6 +64,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
         entryTitle,
         bodyMd,
         manualBackdropUrl,
+        genreLabels: selectedGenres,
         publish: true,
       });
       setPublishedSlug(entry.slug);
@@ -66,6 +78,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
         slug: entry.slug,
         entryTitle,
         bodyMd,
+        genreLabels: selectedGenres,
         unpublish: true,
       });
       setMessage("已取消發布");
@@ -121,6 +134,23 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
             </button>
           </div>
         )}
+
+        <div className={styles.genreSection}>
+          <p className={styles.panelHeading}>類型</p>
+          <div className={styles.genreGrid}>
+            {GENRES.map(({ label }) => (
+              <label key={label} className={styles.genreCheckLabel}>
+                <input
+                  type="checkbox"
+                  checked={selectedGenres.includes(label)}
+                  onChange={() => toggleGenre(label)}
+                  className={styles.genreCheckbox}
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+        </div>
 
         <div className={styles.backdropOverride}>
           <label className={styles.label} htmlFor="manual-backdrop">手動封面圖 URL</label>

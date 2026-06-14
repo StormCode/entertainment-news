@@ -77,3 +77,14 @@ jobs:
       - name: Annotate failure
         if: failure()
         run: echo "::error::Restore test FAILED for $BACKUP_KEY — see smoke check output above"
+
+      - name: Report pipeline health
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          [[ "$STATUS" == "success" ]] || STATUS="failure"
+          curl -sf -X POST "${{ secrets.NEXT_PUBLIC_SITE_URL }}/api/pipeline-health" \
+            -H "Authorization: Bearer ${{ secrets.PIPELINE_HEALTH_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"name\":\"restore-test\",\"status\":\"${STATUS}\"}" \
+          || echo "Warning: health report POST failed (non-fatal)"
