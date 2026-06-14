@@ -14,12 +14,13 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const result = await getEntryBySlug(slug);
+  const decodedSlug = decodeURIComponent(slug);
+  const result = await getEntryBySlug(decodedSlug);
   if (!result) return {};
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://afterhours.film";
   const filmTitle = result.film?.title_zh ?? result.film?.title ?? result.entry.title;
-  const ogImageUrl = `${SITE_URL}/og?slug=${slug}`;
+  const ogImageUrl = `${SITE_URL}/og?slug=${encodeURIComponent(decodedSlug)}`;
 
   return {
     title: `《${filmTitle}》`,
@@ -41,7 +42,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function EntryPage({ params }: PageProps) {
   const { slug } = await params;
-  const result = await getEntryBySlug(slug);
+  const decodedSlug = decodeURIComponent(slug);
+  const result = await getEntryBySlug(decodedSlug);
 
   if (!result) notFound();
 

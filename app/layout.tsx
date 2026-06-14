@@ -49,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-Hant" className={`${serifTC.variable} ${sansTC.variable}`}>
+    <html lang="zh-Hant" className={`${serifTC.variable} ${sansTC.variable}`} suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );

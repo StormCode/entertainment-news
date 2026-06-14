@@ -10,12 +10,13 @@ interface Props {
 
 export default async function EditEntryPage({ params }: Props) {
   const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
 
   const rows = await db
     .select()
     .from(entries)
     .leftJoin(films, eq(entries.primary_film_id, films.id))
-    .where(eq(entries.slug, slug))
+    .where(eq(entries.slug, decodedSlug))
     .limit(1);
 
   if (!rows[0]) notFound();
@@ -38,5 +39,6 @@ export default async function EditEntryPage({ params }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
-  return { title: `編輯：${slug}` };
+  const decodedSlug = decodeURIComponent(slug);
+  return { title: `編輯：${decodedSlug}` };
 }
