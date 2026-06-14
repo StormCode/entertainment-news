@@ -12,12 +12,13 @@ Deferred from plan reviews. Each item has enough context to be picked up cold.
 **Target:** v0.1 (not blocking v0 launch, but must exist before the first time a cron fails silently).
 **Context:** GHA cron drift can skip jobs. The 24h alert threshold was agreed in the pipeline design.
 
-### TODO-E2: scripts/verify-restore.sh
-**What:** Write `scripts/verify-restore.sh` — spins up a local Docker Postgres, restores the latest `pg_dump` from R2, runs smoke queries asserting expected row counts (entries, films, streaming_availability), fails CI if restore breaks.
-**Why:** "We have backups" is theater without a tested restore. An untested backup is worse than no backup — it creates false confidence.
-**Target:** Day 6 (MANDATORY — do not launch without this).
-**Context:** Locked in engineering review as a Day 6 hard requirement. Neon free tier has no PITR.
-**Depends on:** Neon nightly pg_dump workflow (also Day 6).
+### ~~TODO-E2: scripts/verify-restore.sh~~ ✓ DONE (Day 6)
+Delivered: `scripts/verify-restore.sh`, `.github/workflows/nightly-backup.yml`,
+`.github/workflows/restore-test.yml`. Backup runs nightly at 02:00 TST to R2
+(14-day retention). Restore-test runs weekly (Sunday 03:00 TST) with a Postgres
+service container. Script supports `--check-only` for CI and full Docker mode for
+local testing. Required GHA secrets: `DATABASE_URL_DIRECT`, `R2_ENDPOINT`,
+`R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`.
 
 ---
 

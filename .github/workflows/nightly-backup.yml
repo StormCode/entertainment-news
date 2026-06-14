@@ -1,0 +1,68 @@
+name: Nightly DB Backup
+
+on:
+  schedule:
+    # 18:00 UTC = 02:00 Taiwan Standard Time
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Install postgresql-client
+        run: sudo apt-get install -y --no-install-recommends postgresql-client
+
+      - name: Dump database
+        env:
+          PGPASSWORD: ""  # included in DATABASE_URL_DIRECT
+        run: |
+          STAMP=$(date -u +%Y-%m-%d)
+          DUMP_FILE="/tmp/afterhours-${STAMP}.sql.gz"
+          echo "STAMP=${STAMP}" >> "$GITHUB_ENV"
+          echo "DUMP_FILE=${DUMP_FILE}" >> "$GITHUB_ENV"
+          pg_dump \
+            "${{ secrets.DATABASE_URL_DIRECT }}" \
+            --no-owner \
+            --no-acl \
+            --format=plain \
+          | gzip > "$DUMP_FILE"
+          SIZE=$(du -sh "$DUMP_FILE" | cut -f1)
+          echo "Dump size: $SIZE"
+
+      - name: Upload to R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          aws s3 cp "$DUMP_FILE" \
+            "s3://${{ secrets.R2_BUCKET }}/backups/afterhours-${STAMP}.sql.gz" \
+            --endpoint-url "${{ secrets.R2_ENDPOINT }}" \
+            --region auto
+
+      - name: Prune backups older than 14 days
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          CUTOFF=$(date -u -d "14 days ago" +%Y-%m-%d)
+          aws s3 ls "s3://${{ secrets.R2_BUCKET }}/backups/" \
+            --endpoint-url "${{ secrets.R2_ENDPOINT }}" \
+            --region auto \
+          | while read -r _ _ _ KEY; do
+              # Extract date from filename: afterhours-YYYY-MM-DD.sql.gz
+              FILE_DATE=$(echo "$KEY" | grep -oP '\d{4}-\d{2}-\d{2}' || true)
+              if [[ -n "$FILE_DATE" && "$FILE_DATE" < "$CUTOFF" ]]; then
+                echo "Pruning: $KEY (date: $FILE_DATE)"
+                aws s3 rm "s3://${{ secrets.R2_BUCKET }}/backups/${KEY}" \
+                  --endpoint-url "${{ secrets.R2_ENDPOINT }}" \
+                  --region auto
+              fi
+            done
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Nightly backup FAILED for $(date -u +%Y-%m-%d)"

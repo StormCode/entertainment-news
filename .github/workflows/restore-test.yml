@@ -1,0 +1,79 @@
+name: Restore Test
+
+on:
+  schedule:
+    # Every Sunday 19:00 UTC = Monday 03:00 Taiwan Standard Time
+    - cron: "0 19 * * 0"
+  workflow_dispatch:
+
+jobs:
+  restore-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: restore_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install postgresql-client
+        run: sudo apt-get install -y --no-install-recommends postgresql-client
+
+      - name: Download latest backup from R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          LATEST_KEY=$(
+            aws s3 ls "s3://${{ secrets.R2_BUCKET }}/backups/" \
+              --endpoint-url "${{ secrets.R2_ENDPOINT }}" \
+              --region auto \
+            | sort | tail -1 | awk '{print $4}'
+          )
+          if [[ -z "$LATEST_KEY" ]]; then
+            echo "::error::No backup files found in R2 — has the nightly backup run yet?"
+            exit 1
+          fi
+          echo "Downloading: $LATEST_KEY"
+          aws s3 cp \
+            "s3://${{ secrets.R2_BUCKET }}/backups/${LATEST_KEY}" \
+            /tmp/restore-test.sql.gz \
+            --endpoint-url "${{ secrets.R2_ENDPOINT }}" \
+            --region auto
+          echo "SIZE=$(du -sh /tmp/restore-test.sql.gz | cut -f1)" >> "$GITHUB_ENV"
+          echo "BACKUP_KEY=$LATEST_KEY" >> "$GITHUB_ENV"
+
+      - name: Restore dump into test Postgres
+        env:
+          PGPASSWORD: testpass
+        run: |
+          gunzip -c /tmp/restore-test.sql.gz \
+            | psql -h localhost -U postgres -d restore_test -q
+          echo "Restored $BACKUP_KEY ($SIZE) into test Postgres"
+
+      - name: Smoke-check restore
+        env:
+          RESTORE_TEST_URL: postgresql://postgres:testpass@localhost:5432/restore_test
+        run: |
+          chmod +x scripts/verify-restore.sh
+          ./scripts/verify-restore.sh --check-only
+
+      - name: Annotate success
+        if: success()
+        run: echo "::notice::Restore test PASSED ✓ ($BACKUP_KEY, $SIZE)"
+
+      - name: Annotate failure
+        if: failure()
+        run: echo "::error::Restore test FAILED for $BACKUP_KEY — see smoke check output above"
