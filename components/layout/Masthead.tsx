@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MobileNav } from "./MobileNav";
 import styles from "./Masthead.module.css";
 
 const NAV_ITEMS = [
@@ -16,7 +17,7 @@ export function Masthead() {
   const vol = year - 2026 + 1; // volume starts at 1 in 2026
 
   return (
-    <header className={styles.masthead}>
+    <header className={styles.masthead} style={{ position: "relative" }}>
       <div className={styles.inner}>
         <div className={`${styles.topBar} ui date`}>
           vol.{vol} · {now.toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" })} · est. 2026
@@ -37,6 +38,9 @@ export function Masthead() {
           ))}
         </nav>
       </div>
+
+      {/* Mobile-only: hamburger button + slide-in drawer (design D10) */}
+      <MobileNav />
     </header>
   );
 }
