@@ -44,6 +44,7 @@ export async function publishEntry(entryId: number) {
   // Immediate ISR invalidation on publish (eng review D3)
   revalidatePath("/");
   revalidatePath(`/entries/${updated.slug}`);
+  revalidatePath("/rss.xml");
 
   return { slug: updated.slug };
 }
@@ -59,4 +60,5 @@ export async function unpublishEntry(entryId: number) {
 
   revalidatePath("/");
   revalidatePath(`/entries/${updated.slug}`);
+  revalidatePath("/rss.xml");
 }

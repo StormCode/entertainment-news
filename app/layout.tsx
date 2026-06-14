@@ -18,6 +18,8 @@ const sansTC = Noto_Sans_TC({
   preload: false,
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://afterhours.film";
+
 export const metadata: Metadata = {
   title: {
     default: "散場之後",
@@ -28,6 +30,11 @@ export const metadata: Metadata = {
     siteName: "散場之後",
     locale: "zh_TW",
     type: "website",
+  },
+  alternates: {
+    types: {
+      "application/rss+xml": `${SITE_URL}/rss.xml`,
+    },
   },
 };
 

@@ -50,6 +50,7 @@ export async function updateEntry(input: UpdateEntryInput) {
 
   revalidatePath("/");
   revalidatePath(`/entries/${slug}`);
+  if (publish || unpublish) revalidatePath("/rss.xml");
 
   if (publish) {
     redirect(`/entries/${slug}`);

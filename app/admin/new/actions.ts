@@ -109,6 +109,7 @@ export async function saveEntry(input: SaveEntryInput) {
     // Trigger ISR cache invalidation on publish (eng review D3)
     revalidatePath("/");
     revalidatePath(`/entries/${entry.slug}`);
+    revalidatePath("/rss.xml");
     redirect(`/entries/${entry.slug}`);
   }
 
