@@ -366,3 +366,4 @@ Verify transfer size in DevTools after deploy — target < 600KB per page.
 | D11 | Mobile article body: padding 20px each side, min font-size 17px | ✓ |
 | D12 | Hero gradient CSS locked (see Hero Carousel component above) | ✓ |
 | D13 | font-weight 500 removed; only 400/700/900 | ✓ |
+| D14 | OG card: 1200×630px, full-bleed backdrop, dark gradient overlay, gold accent strip 4px bottom, bottom-left: 《片名》gold 20px + entry title ink 36px bold + director muted 17px, bottom-right: 「散場之後」wordmark gold 15px letter-spacing 0.16em; Noto Serif TC 700 fetched via Google Fonts &text= subset; falls back to TMDB CDN if R2 not yet uploaded; revalidate 1h | ✓ |

@@ -30,7 +30,7 @@ local testing. Required GHA secrets: `DATABASE_URL_DIRECT`, `R2_ENDPOINT`,
 **Target:** v0.1 (needs meaningful content volume to be useful — minimum ~10 entries).
 **Context:** Requires localStorage; no server-side session needed. Badge uses `--gold` color, `6px × 6px` dot style, top-right of poster image.
 
-### TODO-D2: OG card visual spec + implementation
+### ~~TODO-D2: OG card visual spec + implementation~~ ✓ DONE
 **What:** Lock OG card layout in DESIGN.md and implement via `next/og`. Layout: full-bleed backdrop image, 《片名》title bottom-left (serif 32px white), director + streaming status below title, 「散場之後」wordmark bottom-right (gold, sans 14px).
 **Why:** Shared links on Bluesky/Threads are the primary discovery channel. A generic "link preview" loses the editorial identity; a designed OG card signals the publication register.
 **Target:** Day 8 (in v0 success criteria per design review recommendation — revise timeline if needed).

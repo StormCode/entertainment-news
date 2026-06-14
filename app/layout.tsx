@@ -26,15 +26,20 @@ export const metadata: Metadata = {
     template: "%s — 散場之後",
   },
   description: "一份個人藝術電影日誌・每夜更新",
-  openGraph: {
-    siteName: "散場之後",
-    locale: "zh_TW",
-    type: "website",
-  },
   alternates: {
     types: {
       "application/rss+xml": `${SITE_URL}/rss.xml`,
     },
+  },
+  openGraph: {
+    siteName: "散場之後",
+    locale: "zh_TW",
+    type: "website",
+    images: [{ url: `${SITE_URL}/og`, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [`${SITE_URL}/og`],
   },
 };
 

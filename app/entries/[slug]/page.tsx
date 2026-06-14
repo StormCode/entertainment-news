@@ -17,15 +17,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const result = await getEntryBySlug(slug);
   if (!result) return {};
 
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://afterhours.film";
   const filmTitle = result.film?.title_zh ?? result.film?.title ?? result.entry.title;
+  const ogImageUrl = `${SITE_URL}/og?slug=${slug}`;
+
   return {
     title: `《${filmTitle}》`,
     description: result.entry.title,
     openGraph: {
       title: `《${filmTitle}》— 散場之後`,
-      images: result.entry.backdrop_url
-        ? [{ url: result.entry.backdrop_url }]
-        : [],
+      description: result.entry.title,
+      type: "article",
+      images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `《${filmTitle}》— 散場之後`,
+      description: result.entry.title,
+      images: [ogImageUrl],
     },
   };
 }
