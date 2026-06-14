@@ -1,0 +1,22 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+  font-family: var(--font-serif-tc), serif;
+  margin-bottom: 6px;
+}
+
+.sub {
+  font-size: 13px;
+  color: var(--muted);
+}
