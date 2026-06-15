@@ -103,7 +103,7 @@ export default async function EntryPage({ params }: PageProps) {
         <hr className={styles.rule} />
       </header>
 
-      {/* Article body — no sidebar (design D2) */}
+      {/* Article body — same 800px column as identity (D2) */}
       <article
         id="main-content"
         className={styles.body}

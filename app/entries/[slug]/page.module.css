@@ -27,8 +27,9 @@
   background: var(--paper-2);
 }
 
+/* Identity and body share the same centred column — left/right margins always match */
 .identity {
-  max-width: 1100px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 32px 40px;
 }
@@ -61,9 +62,9 @@
   margin: 0;
 }
 
-/* Article body: 720px centred, no sidebar */
+/* Body: same 800px column as identity */
 .body {
-  max-width: 720px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 40px 40px 80px;
   font-size: 18px;
@@ -88,12 +89,18 @@
   margin: 1.4em 0;
 }
 
-/* Mobile */
+/* Tablet 600–899px: tighten padding so column never overflows viewport */
+@media (max-width: 899px) {
+  .identity { padding: 28px 28px; }
+  .body { padding: 32px 28px 60px; }
+}
+
+/* Mobile <600px */
 @media (max-width: 599px) {
-  .identity { padding: 20px 20px; }
+  .identity { padding: 20px; }
   .title { font-size: 28px; }
   .body {
-    padding: 24px 20px 60px; /* D11: 20px padding each side */
-    font-size: 17px; /* D11: min 17px */
+    padding: 24px 20px 60px;
+    font-size: 17px;
   }
 }

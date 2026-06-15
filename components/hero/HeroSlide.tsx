@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Chip } from "@/components/ui/Chip";
 import type { EntryWithFilm } from "@/lib/queries/entries";
 import styles from "./HeroSlide.module.css";
@@ -16,15 +15,7 @@ export function HeroSlide({ entry }: Props) {
   if (!entry) {
     return (
       <div className={styles.hero} aria-label="精選文章">
-        <Image
-          src={backdrop}
-          alt=""
-          fill
-          fetchPriority="high"
-          loading="eager"
-          sizes="100vw"
-          className={styles.bgImg}
-        />
+        <div className={styles.bg} style={{ backgroundImage: `url('${backdrop}')` }} />
         <div className={styles.overlay} />
       </div>
     );
@@ -32,15 +23,7 @@ export function HeroSlide({ entry }: Props) {
 
   return (
     <Link href={`/entries/${entry.slug}`} className={styles.hero} aria-label={`閱讀：${entry.title}`}>
-      <Image
-        src={backdrop}
-        alt=""
-        fill
-        fetchPriority="high"
-        loading="eager"
-        sizes="100vw"
-        className={styles.bgImg}
-      />
+      <div className={styles.bg} style={{ backgroundImage: `url('${backdrop}')` }} />
       <div className={styles.overlay} />
 
       <div className={styles.content}>

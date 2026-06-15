@@ -18,15 +18,17 @@
 
 /* ── Backdrop ──────────────────────────────────────────────────── */
 
-.bgImg {
-  object-fit: cover;
-  object-position: center;
+.bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
   transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
 }
 
-.hero:hover .bgImg,
-.hero:focus-visible .bgImg {
+.hero:hover .bg,
+.hero:focus-visible .bg {
   transform: scale(1.03);
 }
 
