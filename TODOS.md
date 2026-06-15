@@ -29,6 +29,14 @@ local testing. Required GHA secrets: `DATABASE_URL_DIRECT`, `R2_ENDPOINT`,
 
 ## Design Review TODOs (from /plan-design-review 2026-06-13)
 
+### TODO-D3: GenreGrid — 重新啟用類別連結（v0.1 時）
+**What:** 將 `components/genres/GenreGrid.tsx` 的 `<div>` 改回 `<Link href={/genres/${slug}}>`, 移除 `cardTooltip` span 和 disabled 相關 CSS（`.cardTooltip`, `cursor: default`, tooltip 邏輯）。
+**Why:** v0 中 /genres/[slug] 頁面尚未實作，因此暫時禁用連結避免 404。v0.1 實作篩選頁面後需同步更新。
+**Target:** v0.1（/genres/[genre] 頁面完成後）。
+**Context:** 禁用邏輯在 GenreGrid.tsx 第 16-19 行有 v0.1 更新提示的 comment。
+
+---
+
 ### TODO-D1: "New since last visit" marker on entry cards
 **What:** Add a small 「新」badge to entry cards for articles published since the reader's last visit. Use `localStorage` to persist the last visit timestamp.
 **Why:** Returning readers scan for new content first. A clear "new" marker removes the need to mentally compare dates.

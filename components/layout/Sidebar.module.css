@@ -1,28 +1,38 @@
+/* Sidebar: compact editorial list — panels run together without large gaps */
+
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 0;
 }
 
 .panel {
-  /* no extra background — sits on --paper */
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .heading {
-  font-size: 11px;
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 10px;
   font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 8px;
-  margin-bottom: 12px;
+  letter-spacing: 0.14em;
+  margin-bottom: 10px;
 }
 
 .empty {
-  font-size: 13px;
+  font-size: 12px;
   font-style: italic;
   color: var(--muted);
+  padding: 4px 0;
 }
 
 .list {
@@ -31,12 +41,18 @@
   padding: 0;
 }
 
+/* ── Item: single compact row ───────────────────────────────────── */
+
 .item {
   display: flex;
-  flex-direction: column;
-  padding: 8px 0;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 0;
   border-bottom: 1px dotted var(--line);
   font-size: 13px;
+  min-height: 32px;
 }
 
 .item:last-child {
@@ -45,7 +61,11 @@
 
 .itemLink {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
   text-decoration: none;
   color: inherit;
 }
@@ -56,15 +76,21 @@
 
 .itemLabel {
   color: var(--ink);
-  line-height: 1.5;
+  line-height: 1.4;
   transition: color 0.15s;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
 }
 
 .itemSub {
   font-size: 11px;
   color: var(--muted);
   font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
-  margin-top: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .itemNote {

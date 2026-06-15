@@ -367,3 +367,7 @@ Verify transfer size in DevTools after deploy — target < 600KB per page.
 | D12 | Hero gradient CSS locked (see Hero Carousel component above) | ✓ |
 | D13 | font-weight 500 removed; only 400/700/900 | ✓ |
 | D14 | OG card: 1200×630px, full-bleed backdrop, dark gradient overlay, gold accent strip 4px bottom, bottom-left: 《片名》gold 20px + entry title ink 36px bold + director muted 17px, bottom-right: 「散場之後」wordmark gold 15px letter-spacing 0.16em; Noto Serif TC 700 fetched via Google Fonts &text= subset; falls back to TMDB CDN if R2 not yet uploaded; revalidate 1h | ✓ |
+| D15 | Genre card colors (per-slug): comedy=#f5c020, mystery=#7040c8, sci-fi=#2060d8, romance=#e05080, documentary=#30a050, action=#e05a10. Applied via `mix-blend-mode: color` over grayscale image. | ✓ |
+| D16 | GenreGrid: border-radius 10px, 3-col desktop / 2-col tablet+mobile, padding 56px 40px 72px (bottom padding for page-bottom position). Disabled in v0 (links point to 404 until v0.1). Desktop-only tooltip "將於 v0.1 開放" via CSS `@media (hover: hover) .card:hover .cardTooltip`. Section heading "探索類型" in muted sans 11px uppercase above grid. | ✓ |
+| D17 | Hero title: `clamp(22px, 3vw, 38px)` Noto Serif TC 700. At 1100px = 33px; at 1440px = 38px (capped). | ✓ |
+| D18 | Sidebar: compact editorial list. Panel gap = 0 (previously 32px). All 3 panels run together. Item height ~32px min-height, row layout (label flex:1 left + sub right). Panel heading 10px uppercase muted, no bottom border on heading (spacing only). Panel bottom rule 1px var(--line), removed on last-child. | ✓ |

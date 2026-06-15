@@ -72,9 +72,6 @@ export default function HomePage() {
         </Suspense>
       </section>
 
-      {/* Genre cards — 6 categories, static film-still backgrounds */}
-      <GenreGrid />
-
       {/* Main grid: entry wall (1fr) + sidebar (280px) */}
       <main className={styles.main}>
         <div className={styles.grid}>
@@ -99,6 +96,9 @@ export default function HomePage() {
           </aside>
         </div>
       </main>
+
+      {/* Genre discovery — bottom of page so articles are primary content */}
+      <GenreGrid />
     </>
   );
 }

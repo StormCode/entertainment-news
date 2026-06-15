@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { GENRES } from "@/lib/constants/genres";
 import styles from "./GenreGrid.module.css";
 
 // Color filter per genre (applied via mix-blend-mode: color over grayscale image)
+// DESIGN.md D15: genre color palette
 const GENRE_COLOR: Record<string, string> = {
   comedy:       "#f5c020", // 黃
   mystery:      "#7040c8", // 紫
@@ -14,26 +14,28 @@ const GENRE_COLOR: Record<string, string> = {
 
 export function GenreGrid() {
   return (
-    <section className={styles.section} aria-label="電影類別">
+    <section className={styles.section} aria-label="探索電影類型">
+      <h2 className={styles.heading}>探索類型</h2>
       <div className={styles.grid}>
         {GENRES.map(({ label, slug }) => (
-          <Link key={slug} href={`/genres/${slug}`} className={styles.card}>
-            {/* Grayscale background image */}
+          // v0: genre filter pages don't exist yet; cards are non-interactive
+          // Desktop: CSS tooltip on hover. Mobile: purely visual.
+          // v0.1: replace <div> with <Link href={`/genres/${slug}`}> and remove disabled styles
+          <div key={slug} className={styles.card} aria-label={`${label}（將於 v0.1 開放）`}>
             <span
               className={styles.cardBg}
               style={{ backgroundImage: `url('/images/genres/${slug}.jpg')` }}
               aria-hidden="true"
             />
-            {/* Color filter: preserves luminance of photo, applies genre hue */}
             <span
               className={styles.cardColorFilter}
               style={{ backgroundColor: GENRE_COLOR[slug] }}
               aria-hidden="true"
             />
-            {/* Dark gradient for text legibility */}
             <span className={styles.cardOverlay} aria-hidden="true" />
             <span className={styles.cardLabel}>{label}</span>
-          </Link>
+            <span className={styles.cardTooltip} aria-hidden="true">將於 v0.1 開放</span>
+          </div>
         ))}
       </div>
     </section>
