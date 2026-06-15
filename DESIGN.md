@@ -58,10 +58,14 @@ font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
 | Weight | Use |
 |--------|-----|
 | 400    | Body text, meta, sidebar items |
-| 700    | Entry titles, sidebar headings, chip labels (live) |
-| 900    | Masthead wordmark (preload this one) |
+| 700    | Sidebar headings, chip labels (live) — **Noto Sans TC only** |
+| 900    | Masthead wordmark, entry card titles, hero title |
 
 **Weight 500 is REMOVED.** Any label previously specifying 500 collapses to 400.
+
+**Noto Serif TC loads 400 + 900 only** (700 removed in LCP optimization to reduce render-blocking CSS from 184 KB → 148 KB). Elements with `font-weight: 700` on Noto Serif TC (e.g. h2/h3 in article body) auto-map to 900 via browser weight-matching.
+
+**Noto Sans TC loads 400 + 700** (unchanged — 700 needed for UI headings and live chips).
 
 ### CJK rules
 

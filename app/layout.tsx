@@ -3,9 +3,10 @@ import { Noto_Serif_TC, Noto_Sans_TC } from "next/font/google";
 import "./globals.css";
 
 // CJK fonts: no `subsets` — next/font types don't expose chinese-traditional
-// Weights: 400/700/900 ONLY — 500 removed (locked in design review D13)
+// Weights: 400/900 only — 700 removed to reduce render-blocking CSS size.
+// Elements using font-weight:700 in serif TC get browser weight-matching to 900.
 const serifTC = Noto_Serif_TC({
-  weight: ["400", "700", "900"],
+  weight: ["400", "900"],
   display: "swap",
   variable: "--font-serif-tc",
   preload: false,
