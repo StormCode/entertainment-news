@@ -73,7 +73,7 @@ export default function HomePage() {
       </section>
 
       {/* Main grid: entry wall (1fr) + sidebar (280px) */}
-      <main className={styles.main}>
+      <main id="main-content" className={styles.main}>
         <div className={styles.grid}>
           <section className={styles.entries} aria-label="文章牆">
             <Suspense

@@ -11,6 +11,11 @@
   background: var(--paper-2);
 }
 
+.hero:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
 /* ── Backdrop ──────────────────────────────────────────────────── */
 
 .bg {

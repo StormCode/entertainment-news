@@ -105,6 +105,7 @@ export default async function EntryPage({ params }: PageProps) {
 
       {/* Article body — no sidebar (design D2) */}
       <article
+        id="main-content"
         className={styles.body}
         dangerouslySetInnerHTML={{ __html: bodyHtml }}
         aria-label={`${filmTitle} 文章內文`}

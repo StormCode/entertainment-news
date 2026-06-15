@@ -118,8 +118,8 @@
 }
 
 .closeBtn {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,6 +159,11 @@
   text-decoration: none;
   transition: background 0.12s, color 0.12s;
   border-left: 3px solid transparent;
+}
+
+.drawerLink:visited {
+  color: var(--ink);
+  text-decoration: none;
 }
 
 .drawerLink:hover {

@@ -1,3 +1,33 @@
+/* Skip-to-main link — visually hidden until focused (WCAG 2.4.1 Level A) */
+.skipLink {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: -1;
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.skipLink:focus {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  z-index: 9999;
+  background: var(--paper);
+  color: var(--gold);
+  border: 2px solid var(--gold);
+  padding: 10px 20px;
+  font-size: 14px;
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  letter-spacing: 0.04em;
+}
+
 .masthead {
   width: 100%;
   background: var(--paper);
@@ -61,6 +91,11 @@
 
 .navLink:hover {
   color: var(--gold);
+}
+
+.navLink:visited {
+  color: var(--ink);
+  text-decoration: none;
 }
 
 /* Tablet: reduce masthead */

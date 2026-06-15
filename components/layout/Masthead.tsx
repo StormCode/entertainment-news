@@ -18,6 +18,7 @@ export function Masthead() {
 
   return (
     <header className={styles.masthead} style={{ position: "relative" }}>
+      <a href="#main-content" className={styles.skipLink}>跳到主要內容</a>
       <div className={styles.inner}>
         <div className={`${styles.topBar} ui date`}>
           vol.{vol} · {now.toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" })} · est. 2026
