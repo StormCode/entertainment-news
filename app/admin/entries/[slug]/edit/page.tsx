@@ -30,8 +30,26 @@ export default async function EditEntryPage({ params }: Props) {
 
   return (
     <EditEntryForm
-      entry={entry}
-      film={film}
+      entry={{
+        id: entry.id,
+        slug: entry.slug,
+        title: entry.title,
+        body_md: entry.body_md,
+        manual_backdrop_url: entry.manual_backdrop_url,
+        backdrop_url: entry.backdrop_url,
+        is_published: entry.is_published,
+        published_at: entry.published_at?.toISOString() ?? null,
+      }}
+      film={film ? {
+        id: film.id,
+        title: film.title,
+        title_zh: film.title_zh,
+        director: film.director,
+        runtime_min: film.runtime_min,
+        release_year: film.release_year,
+        poster_url: film.poster_url,
+        backdrop_url: film.backdrop_url,
+      } : null}
       chips={chips.map((c) => ({ label: c.label, kind: c.kind, is_live: c.is_live }))}
     />
   );

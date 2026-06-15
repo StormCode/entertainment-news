@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { Entry } from "@/db/schema/entries";
-import type { Film } from "@/db/schema/films";
 import { Toast } from "@/components/ui/Toast";
 import { updateEntry, retryR2Upload } from "./actions";
 import { GENRES, type GenreLabel } from "@/lib/constants/genres";
@@ -14,9 +12,32 @@ interface EntryChip {
   is_live: string | null;
 }
 
+// Serializable subset — Date fields converted to ISO strings by the Server Component
+interface EntryProps {
+  id: number;
+  slug: string;
+  title: string;
+  body_md: string;
+  manual_backdrop_url: string | null;
+  backdrop_url: string | null;
+  is_published: boolean;
+  published_at: string | null;
+}
+
+interface FilmProps {
+  id: number;
+  title: string;
+  title_zh: string | null;
+  director: string | null;
+  runtime_min: number | null;
+  release_year: number | null;
+  poster_url: string | null;
+  backdrop_url: string | null;
+}
+
 interface Props {
-  entry: Entry;
-  film: Film | null;
+  entry: EntryProps;
+  film: FilmProps | null;
   chips: EntryChip[];
 }
 
