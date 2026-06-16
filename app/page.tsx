@@ -1,12 +1,10 @@
 import { Suspense } from "react";
 import { Masthead } from "@/components/layout/Masthead";
-import { Sidebar } from "@/components/layout/Sidebar";
 import { EntryCard } from "@/components/entries/EntryCard";
 import { GenreGrid } from "@/components/genres/GenreGrid";
 import { HeroSlide } from "@/components/hero/HeroSlide";
-import { HeroSkeleton, EntryCardSkeleton, SidebarSkeleton } from "@/components/skeleton";
+import { HeroSkeleton, EntryCardSkeleton } from "@/components/skeleton";
 import { getPublishedEntries, getHeroEntry } from "@/lib/queries/entries";
-import { getActiveFestivals, getComingSoonStreaming, getExpiringSoonStreaming } from "@/lib/queries/sidebar";
 import styles from "./page.module.css";
 
 // ISR: revalidate every 4 hours; on-publish revalidatePath() overrides immediately (eng D3)
@@ -15,7 +13,7 @@ export const revalidate = 14400;
 async function EntryGrid() {
   let entries: Awaited<ReturnType<typeof getPublishedEntries>> = [];
   try {
-    entries = await getPublishedEntries(20);
+    entries = await getPublishedEntries(40);
   } catch {
     // DB unavailable at build time or cold start — show empty state
   }
@@ -47,19 +45,6 @@ async function Hero() {
   return <HeroSlide entry={entry} />;
 }
 
-async function SidebarData() {
-  try {
-    const [festivals, comingSoon, expiringSoon] = await Promise.all([
-      getActiveFestivals(),
-      getComingSoonStreaming(),
-      getExpiringSoonStreaming(),
-    ]);
-    return <Sidebar festivals={festivals} comingSoon={comingSoon} expiringSoon={expiringSoon} />;
-  } catch {
-    return <Sidebar festivals={[]} comingSoon={[]} expiringSoon={[]} />;
-  }
-}
-
 export default function HomePage() {
   return (
     <>
@@ -72,32 +57,22 @@ export default function HomePage() {
         </Suspense>
       </section>
 
-      {/* Main grid: entry wall (1fr) + sidebar (280px) */}
-      <main id="main-content" className={styles.main}>
-        <div className={styles.grid}>
-          <section className={styles.entries} aria-label="文章牆">
-            <Suspense
-              fallback={
-                <div className={styles.entryGrid}>
-                  {[...Array(6)].map((_, i) => (
-                    <EntryCardSkeleton key={i} />
-                  ))}
-                </div>
-              }
-            >
-              <EntryGrid />
-            </Suspense>
-          </section>
-
-          <aside className={styles.sidebar} aria-label="側欄資訊">
-            <Suspense fallback={<SidebarSkeleton />}>
-              <SidebarData />
-            </Suspense>
-          </aside>
-        </div>
+      {/* Poster wall — full-width, no sidebar */}
+      <main id="main-content" className={styles.main} aria-label="文章牆">
+        <Suspense
+          fallback={
+            <div className={styles.entryGrid}>
+              {[...Array(16)].map((_, i) => (
+                <EntryCardSkeleton key={i} />
+              ))}
+            </div>
+          }
+        >
+          <EntryGrid />
+        </Suspense>
       </main>
 
-      {/* Genre discovery — bottom of page so articles are primary content */}
+      {/* Genre discovery — bottom of page */}
       <GenreGrid />
     </>
   );

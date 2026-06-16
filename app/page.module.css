@@ -4,24 +4,16 @@
 }
 
 .main {
-  max-width: 1100px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 40px 40px;
+  padding: 32px 40px;
 }
 
-/* Two-column layout: entries (1fr) + sidebar (280px) */
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 56px;
-  align-items: start;
-}
-
-/* Entry poster wall: 2-column grid */
+/* Poster wall — 5 columns on desktop, scales down on smaller screens */
 .entryGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2rem;
 }
 
 .emptyState {
@@ -30,20 +22,13 @@
   grid-column: 1 / -1;
 }
 
-/* Wide tablet */
-@media (max-width: 1099px) {
-  .grid { gap: 40px; }
-}
-
-/* Tablet: sidebar drops below */
+/* Tablet: 4 columns */
 @media (max-width: 899px) {
-  .grid { grid-template-columns: 1fr; }
-  .sidebar { order: 2; }
-  .entries { order: 1; }
+  .entryGrid { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* Mobile */
+/* Mobile: 2 columns */
 @media (max-width: 599px) {
-  .main { padding: 24px 20px; }
-  .entryGrid { grid-template-columns: 1fr; }
+  .main { padding: 16px 12px; }
+  .entryGrid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
 }
