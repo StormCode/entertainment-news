@@ -12,6 +12,9 @@ export function EntryCard({ entry }: EntryCardProps) {
   const director = entry.film?.director ?? null;
   const runtime = entry.film?.runtimeMin ?? null;
   const filmTitle = entry.film?.titleZh ?? entry.film?.title ?? entry.title;
+  const isNew = entry.publishedAt
+    ? Date.now() - entry.publishedAt.getTime() < 14 * 24 * 60 * 60 * 1000
+    : false;
 
   return (
     <Link href={`/entries/${entry.slug}`} className={styles.card}>
@@ -27,6 +30,8 @@ export function EntryCard({ entry }: EntryCardProps) {
         ) : (
           <div className={styles.posterPlaceholder} aria-hidden="true" />
         )}
+
+        {isNew && <span className={styles.newBadge} aria-label="新文章">新</span>}
 
         {/* Desktop hover overlay */}
         <div className={styles.overlay} aria-hidden="true">

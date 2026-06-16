@@ -36,8 +36,7 @@
   aspect-ratio: 3 / 2;
   display: flex;
   align-items: flex-end;
-  cursor: default;
-  /* Contain mix-blend-mode within card boundaries */
+  text-decoration: none;
   isolation: isolate;
 }
 
@@ -95,34 +94,6 @@
   font-weight: 700;
   color: rgba(255, 255, 255, 0.90);
   letter-spacing: 0.08em;
-}
-
-/* ── Desktop tooltip (hover only) ───────────────────────────────── */
-
-.cardTooltip {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  background: rgba(12, 10, 8, 0.85);
-  color: var(--muted);
-  font-family: var(--font-sans-tc), sans-serif;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  padding: 5px 12px;
-  border-radius: 3px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
-}
-
-/* Only show tooltip on hover (hover = pointer device) */
-@media (hover: hover) {
-  .card:hover .cardTooltip {
-    opacity: 1;
-  }
 }
 
 /* ── Responsive ─────────────────────────────────────────────────── */

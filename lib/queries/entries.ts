@@ -158,6 +158,63 @@ export async function getHeroEntries(): Promise<EntryWithFilm[]> {
   }));
 }
 
+export async function getEntriesByGenre(genreLabel: string): Promise<EntryWithFilm[]> {
+  const matching = await db
+    .select({ entry_id: entryChips.entry_id })
+    .from(entryChips)
+    .where(and(eq(entryChips.kind, "genre"), eq(entryChips.label, genreLabel)));
+
+  if (matching.length === 0) return [];
+
+  const ids = matching.map((r) => r.entry_id);
+
+  const rows = await db
+    .select({
+      id: entries.id,
+      slug: entries.slug,
+      title: entries.title,
+      backdropUrl: entries.backdrop_url,
+      manualBackdropUrl: entries.manual_backdrop_url,
+      publishedAt: entries.published_at,
+      filmTitle: films.title,
+      filmTitleZh: films.title_zh,
+      filmDirector: films.director,
+      filmRuntime: films.runtime_min,
+      filmPosterUrl: films.poster_url,
+    })
+    .from(entries)
+    .leftJoin(films, eq(entries.primary_film_id, films.id))
+    .where(and(eq(entries.is_published, true), inArray(entries.id, ids)))
+    .orderBy(desc(entries.published_at));
+
+  if (rows.length === 0) return [];
+
+  const allChips = await db
+    .select()
+    .from(entryChips)
+    .where(inArray(entryChips.entry_id, rows.map((r) => r.id)));
+
+  return rows.map((r) => ({
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
+    publishedAt: r.publishedAt,
+    film: r.filmTitle
+      ? {
+          title: r.filmTitle,
+          titleZh: r.filmTitleZh,
+          director: r.filmDirector,
+          runtimeMin: r.filmRuntime,
+          posterUrl: r.filmPosterUrl,
+        }
+      : null,
+    chips: allChips
+      .filter((c) => c.entry_id === r.id)
+      .map((c) => ({ label: c.label, kind: c.kind, isLive: c.is_live })),
+  }));
+}
+
 export async function getEntryBySlug(slug: string) {
   const row = await db
     .select()

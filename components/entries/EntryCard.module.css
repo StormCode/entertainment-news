@@ -78,6 +78,23 @@
   text-overflow: ellipsis;
 }
 
+/* 「新」badge — top-right corner, 14-day window */
+.newBadge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  background: var(--gold);
+  color: #0a0806;
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 2px;
+  line-height: 1.6;
+}
+
 /* Mobile caption — replaces overlay on small screens */
 .mobileCaption {
   display: none;
