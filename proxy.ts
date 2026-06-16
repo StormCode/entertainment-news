@@ -23,7 +23,7 @@ export function proxy(req: NextRequest) {
   return new NextResponse("401 Unauthorized", {
     status: 401,
     headers: {
-      "WWW-Authenticate": 'Basic realm="散場之後管理後台", charset="UTF-8"',
+      "WWW-Authenticate": 'Basic realm="Admin"',
     },
   });
 }
