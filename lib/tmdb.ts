@@ -1,5 +1,3 @@
-"use server";
-
 export interface TmdbFilm {
   tmdbId: number;
   title: string;
