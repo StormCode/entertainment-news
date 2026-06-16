@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import { Masthead } from "@/components/layout/Masthead";
 import { EntryCard } from "@/components/entries/EntryCard";

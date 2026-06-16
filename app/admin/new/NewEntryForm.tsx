@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Toast } from "@/components/ui/Toast";
 import { fetchFilmData, saveEntry } from "./actions";
 import styles from "./page.module.css";
@@ -14,6 +15,7 @@ interface FilmPreview {
 }
 
 export function NewEntryForm() {
+  const router = useRouter();
   const [tmdbUrl, setTmdbUrl] = useState("");
   const [film, setFilm] = useState<FilmPreview | null>(null);
   const [filmError, setFilmError] = useState("");
@@ -46,8 +48,10 @@ export function NewEntryForm() {
 
   function handlePublish() {
     startTransition(async () => {
-      // saveEntry with publish:true calls redirect() server-side
-      await saveEntry({ tmdbUrl, entryTitle, bodyMd, imageCredit, publish: true });
+      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, imageCredit, publish: true });
+      if ("slug" in result) {
+        router.push(`/entries/${result.slug}`);
+      }
     });
   }
 

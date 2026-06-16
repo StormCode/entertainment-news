@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { films, entries } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -113,11 +112,9 @@ export async function saveEntry(input: SaveEntryInput) {
     .returning({ id: entries.id, slug: entries.slug });
 
   if (publish) {
-    // Trigger ISR cache invalidation on publish (eng review D3)
     revalidatePath("/");
     revalidatePath(`/entries/${entry.slug}`);
     revalidatePath("/rss.xml");
-    redirect(`/entries/${entry.slug}`);
   }
 
   return { entryId: entry.id, slug: entry.slug };

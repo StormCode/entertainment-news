@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Toast } from "@/components/ui/Toast";
+import { useRouter } from "next/navigation";
 import { updateEntry, retryR2Upload } from "./actions";
 import { GENRES, type GenreLabel } from "@/lib/constants/genres";
 import styles from "./edit.module.css";
@@ -43,6 +43,7 @@ interface Props {
 }
 
 export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
+  const router = useRouter();
   const [entryTitle, setEntryTitle] = useState(entry.title);
   const [bodyMd, setBodyMd] = useState(entry.body_md);
   const [manualBackdropUrl, setManualBackdropUrl] = useState(entry.manual_backdrop_url ?? "");
@@ -50,7 +51,6 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
   const [selectedGenres, setSelectedGenres] = useState<GenreLabel[]>(
     () => initialChips.filter((c) => c.kind === "genre").map((c) => c.label as GenreLabel)
   );
-  const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
   const [r2Pending, startR2] = useTransition();
@@ -92,7 +92,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
         genreLabels: selectedGenres,
         publish: true,
       });
-      setPublishedSlug(entry.slug);
+      router.push(`/entries/${entry.slug}`);
     });
   }
 
@@ -291,12 +291,6 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
         </div>
       </aside>
 
-      {publishedSlug && (
-        <Toast
-          filmTitle={film?.title ?? entryTitle}
-          redirectTo={`/entries/${publishedSlug}`}
-        />
-      )}
     </div>
   );
 }

@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { entries, films } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -58,10 +57,6 @@ export async function updateEntry(input: UpdateEntryInput) {
   revalidatePath("/");
   revalidatePath(`/entries/${slug}`);
   if (publish || unpublish) revalidatePath("/rss.xml");
-
-  if (publish) {
-    redirect(`/entries/${slug}`);
-  }
 
   return { ok: true };
 }
