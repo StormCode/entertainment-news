@@ -78,6 +78,7 @@ export default async function EntryPage({ params }: PageProps) {
         {/* Film identity block */}
         <div className={styles.identity}>
           <h1 className={styles.title}>《{filmTitle}》</h1>
+          <p className={styles.entryTitle}>{entry.title}</p>
           <p className={`${styles.meta} date`}>
             {film?.director && <span>{film.director}</span>}
             {film?.runtime_min && film.director && <span> · </span>}

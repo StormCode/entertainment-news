@@ -1,0 +1,203 @@
+/* Hero Carousel — full-bleed 21:9 (desktop) / 16:9 (tablet) / 4:3 (mobile) */
+
+.hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  background: var(--paper-2);
+}
+
+/* ── Slides ──────────────────────────────────────────────────────── */
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  opacity: 0;
+  transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.slide:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+.slideActive {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+/* ── Backdrop ──────────────────────────────────────────────────────── */
+
+.bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 8s linear;
+  will-change: transform;
+}
+
+.slideActive .bg {
+  transform: scale(1.04);
+}
+
+/* ── Dark gradient overlay ─────────────────────────────────────────── */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(8, 6, 4, 0.92) 0%,
+    rgba(8, 6, 4, 0.55) 35%,
+    rgba(8, 6, 4, 0.15) 65%,
+    transparent 100%
+  );
+}
+
+/* ── Content (bottom-left) ─────────────────────────────────────────── */
+
+.content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 36px 56px;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 2;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filmTitle {
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  opacity: 0.9;
+}
+
+.title {
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: clamp(22px, 3vw, 38px);
+  font-weight: 700;
+  color: var(--ink-strong);
+  line-height: 1.35;
+  letter-spacing: 0.03em;
+}
+
+.cta {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+  transition: border-color 0.2s;
+  align-self: flex-start;
+}
+
+.slideActive:hover .cta,
+.slideActive:focus-visible .cta {
+  border-bottom-color: var(--gold);
+}
+
+.slideActive:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+}
+
+/* ── Arrow buttons ─────────────────────────────────────────────────── */
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: rgba(8, 6, 4, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 28px;
+  line-height: 1;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  backdrop-filter: blur(4px);
+}
+
+.arrow:hover {
+  background: rgba(212, 175, 55, 0.25);
+  color: var(--gold);
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+.arrowPrev { left: 20px; }
+.arrowNext { right: 20px; }
+
+/* ── Dot indicators ────────────────────────────────────────────────── */
+
+.dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+
+.dotActive {
+  background: var(--gold);
+  transform: scale(1.4);
+}
+
+/* ── Tablet: 16:9 ───────────────────────────────────────────────── */
+
+@media (max-width: 899px) {
+  .hero { aspect-ratio: 16 / 9; }
+  .content { padding: 28px 32px; max-width: 100%; }
+  .title { font-size: clamp(20px, 3.5vw, 30px); }
+  .dots { bottom: 16px; }
+  .arrow { width: 36px; height: 36px; font-size: 22px; }
+  .arrowPrev { left: 12px; }
+  .arrowNext { right: 12px; }
+}
+
+/* ── Mobile: 4:3 ────────────────────────────────────────────────── */
+
+@media (max-width: 599px) {
+  .hero { aspect-ratio: 4 / 3; }
+  .content { padding: 16px 20px; gap: 7px; }
+  .title { font-size: 18px; }
+  .cta { font-size: 11px; }
+  .dots { bottom: 12px; }
+  .arrow { display: none; }
+}

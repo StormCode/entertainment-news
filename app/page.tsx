@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import { Masthead } from "@/components/layout/Masthead";
 import { EntryCard } from "@/components/entries/EntryCard";
 import { GenreGrid } from "@/components/genres/GenreGrid";
-import { HeroSlide } from "@/components/hero/HeroSlide";
+import { HeroCarousel } from "@/components/hero/HeroCarousel";
 import { HeroSkeleton, EntryCardSkeleton } from "@/components/skeleton";
-import { getPublishedEntries, getHeroEntry } from "@/lib/queries/entries";
+import { getPublishedEntries, getHeroEntries } from "@/lib/queries/entries";
 import styles from "./page.module.css";
 
 // ISR: revalidate every 4 hours; on-publish revalidatePath() overrides immediately (eng D3)
@@ -36,13 +36,13 @@ async function EntryGrid() {
 }
 
 async function Hero() {
-  let entry = null;
+  let heroEntries: Awaited<ReturnType<typeof getHeroEntries>> = [];
   try {
-    entry = await getHeroEntry();
+    heroEntries = await getHeroEntries();
   } catch {
-    // DB unavailable — show placeholder without crashing
+    // DB unavailable — show empty carousel without crashing
   }
-  return <HeroSlide entry={entry} />;
+  return <HeroCarousel entries={heroEntries} />;
 }
 
 export default function HomePage() {

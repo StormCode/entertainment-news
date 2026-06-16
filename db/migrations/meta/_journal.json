@@ -15,6 +15,13 @@
       "when": 1781418311723,
       "tag": "0001_funny_shooting_star",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781621603120,
+      "tag": "0002_dusty_roland_deschain",
+      "breakpoints": true
     }
   ]
 }

@@ -119,6 +119,7 @@ export async function getHeroEntry(): Promise<EntryWithFilm | null> {
 }
 
 export async function getHeroEntries(): Promise<EntryWithFilm[]> {
+  // featured first, then newest — always returns up to 5 regardless of is_hero_featured count
   const rows = await db
     .select({
       id: entries.id,
@@ -135,15 +136,24 @@ export async function getHeroEntries(): Promise<EntryWithFilm[]> {
     })
     .from(entries)
     .leftJoin(films, eq(entries.primary_film_id, films.id))
-    .where(and(eq(entries.is_published, true), eq(entries.is_hero_featured, true)))
-    .orderBy(desc(entries.published_at))
+    .where(eq(entries.is_published, true))
+    .orderBy(desc(entries.is_hero_featured), desc(entries.published_at))
     .limit(5);
+
+  const entryIds = rows.map((r) => r.id);
+  const allChips =
+    entryIds.length > 0
+      ? await db
+          .select()
+          .from(entryChips)
+          .where(inArray(entryChips.entry_id, entryIds))
+      : [];
 
   return rows.map((r) => ({
     id: r.id,
     slug: r.slug,
     title: r.title,
-    backdropUrl: r.backdropUrl ?? r.manualBackdropUrl,
+    backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
     publishedAt: r.publishedAt,
     film: r.filmTitle
       ? {
@@ -154,7 +164,9 @@ export async function getHeroEntries(): Promise<EntryWithFilm[]> {
           posterUrl: r.filmPosterUrl,
         }
       : null,
-    chips: [],
+    chips: allChips
+      .filter((c) => c.entry_id === r.id)
+      .map((c) => ({ label: c.label, kind: c.kind, isLive: c.is_live })),
   }));
 }
 
