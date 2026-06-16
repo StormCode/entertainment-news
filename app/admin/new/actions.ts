@@ -13,9 +13,14 @@ import { uploadFilmImages } from "@/lib/images/r2-upload";
 export async function fetchFilmData(
   tmdbUrl: string
 ): Promise<{ error: string } | { film: NonNullable<Awaited<ReturnType<typeof fetchTmdbFilm>>> }> {
-  const film = await fetchTmdbFilm(tmdbUrl);
-  if (!film) return { error: "找不到影片，請確認 TMDB 網址" };
-  return { film };
+  try {
+    const film = await fetchTmdbFilm(tmdbUrl);
+    if (!film) return { error: "找不到影片，請確認 TMDB 網址" };
+    return { film };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "未知錯誤";
+    return { error: `TMDB 查詢失敗：${msg}` };
+  }
 }
 
 interface SaveEntryInput {
