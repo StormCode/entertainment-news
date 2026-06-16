@@ -7,8 +7,6 @@ import { HeroSkeleton, EntryCardSkeleton } from "@/components/skeleton";
 import { getPublishedEntries, getHeroEntries } from "@/lib/queries/entries";
 import styles from "./page.module.css";
 
-// ISR: revalidate every 4 hours; on-publish revalidatePath() overrides immediately (eng D3)
-export const revalidate = 14400;
 
 async function EntryGrid() {
   let entries: Awaited<ReturnType<typeof getPublishedEntries>> = [];
