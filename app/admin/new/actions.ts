@@ -28,11 +28,12 @@ interface SaveEntryInput {
   titleZh?: string;
   entryTitle: string;
   bodyMd: string;
+  imageCredit?: string;
   publish: boolean;
 }
 
 export async function saveEntry(input: SaveEntryInput) {
-  const { tmdbUrl, titleZh, entryTitle, bodyMd, publish } = input;
+  const { tmdbUrl, titleZh, entryTitle, bodyMd, imageCredit, publish } = input;
 
   let filmId: number | null = null;
 
@@ -104,6 +105,7 @@ export async function saveEntry(input: SaveEntryInput) {
       slug,
       title: entryTitle,
       body_md: bodyMd,
+      image_credit: imageCredit || null,
       primary_film_id: filmId,
       is_published: publish,
       published_at: publish ? new Date() : null,

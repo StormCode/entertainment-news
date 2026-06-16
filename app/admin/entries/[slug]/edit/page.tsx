@@ -37,6 +37,7 @@ export default async function EditEntryPage({ params }: Props) {
         body_md: entry.body_md,
         manual_backdrop_url: entry.manual_backdrop_url,
         backdrop_url: entry.backdrop_url,
+        image_credit: entry.image_credit ?? null,
         is_published: entry.is_published,
         published_at: entry.published_at?.toISOString() ?? null,
       }}

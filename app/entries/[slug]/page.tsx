@@ -50,6 +50,7 @@ export default async function EntryPage({ params }: PageProps) {
   const { entry, film, chips } = result;
   const filmTitle = film?.title_zh ?? film?.title ?? entry.title;
   const backdropUrl = entry.backdrop_url ?? entry.manual_backdrop_url;
+  const imageCredit = entry.image_credit ?? null;
   const bodyHtml = await renderMarkdown(entry.body_md);
 
   return (
@@ -66,6 +67,9 @@ export default async function EntryPage({ params }: PageProps) {
             aria-label={`《${filmTitle}》劇照`}
           >
             <div className={styles.heroGradient} />
+            {imageCredit && (
+              <p className={styles.imageCredit}>圖片來源：{imageCredit}</p>
+            )}
           </div>
         ) : (
           <div className={styles.backdropPlaceholder} />

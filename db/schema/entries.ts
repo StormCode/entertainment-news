@@ -9,6 +9,7 @@ export const entries = pgTable("entries", {
   primary_film_id:  integer("primary_film_id").references(() => films.id),
   backdrop_url:     text("backdrop_url"),               // null if R2 pipeline failed — show 「圖片待補」in admin
   manual_backdrop_url: text("manual_backdrop_url"),     // editor override
+  image_credit:     text("image_credit"),               // displayed bottom-right of backdrop
   is_published:     boolean("is_published").default(false).notNull(),
   is_hero_featured: boolean("is_hero_featured").default(false).notNull(),
   published_at:     timestamp("published_at"),

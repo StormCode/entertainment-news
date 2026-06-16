@@ -27,6 +27,18 @@
   background: var(--paper-2);
 }
 
+.imageCredit {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  z-index: 2;
+}
+
 /* Identity and body share the same centred column — left/right margins always match */
 .identity {
   max-width: 800px;

@@ -19,6 +19,7 @@ export function NewEntryForm() {
   const [filmError, setFilmError] = useState("");
   const [entryTitle, setEntryTitle] = useState("");
   const [bodyMd, setBodyMd] = useState("");
+  const [imageCredit, setImageCredit] = useState("");
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -36,7 +37,7 @@ export function NewEntryForm() {
 
   function handleSaveDraft() {
     startTransition(async () => {
-      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, publish: false });
+      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, imageCredit, publish: false });
       if ("slug" in result) {
         // saved; could show brief inline confirmation
       }
@@ -46,7 +47,7 @@ export function NewEntryForm() {
   function handlePublish() {
     startTransition(async () => {
       // saveEntry with publish:true calls redirect() server-side
-      await saveEntry({ tmdbUrl, entryTitle, bodyMd, publish: true });
+      await saveEntry({ tmdbUrl, entryTitle, bodyMd, imageCredit, publish: true });
     });
   }
 
@@ -79,6 +80,19 @@ export function NewEntryForm() {
             </div>
           )}
           {!film && !filmError && <p className={styles.hint}>貼入網址後自動填入片名、導演、海報</p>}
+
+          <div className={styles.tmdbInput} style={{ marginTop: "20px" }}>
+            <label className={styles.label} htmlFor="image-credit">圖片來源</label>
+            <input
+              id="image-credit"
+              type="text"
+              value={imageCredit}
+              onChange={(e) => setImageCredit(e.target.value)}
+              placeholder="© 發行商 / 攝影師"
+              className={styles.input}
+            />
+            <p className={styles.hint}>顯示於封面右下角（版權聲明）</p>
+          </div>
         </div>
       </aside>
 

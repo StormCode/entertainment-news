@@ -15,6 +15,7 @@ interface UpdateEntryInput {
   titleZh?: string;
   bodyMd: string;
   manualBackdropUrl?: string;
+  imageCredit?: string;
   chips?: Array<{ label: string; kind: string; isLive?: boolean }>;
   genreLabels?: string[];
   publish?: boolean;
@@ -23,7 +24,7 @@ interface UpdateEntryInput {
 }
 
 export async function updateEntry(input: UpdateEntryInput) {
-  const { entryId, slug, entryTitle, titleZh, bodyMd, manualBackdropUrl, chips, genreLabels, publish, unpublish, heroFeatured } = input;
+  const { entryId, slug, entryTitle, titleZh, bodyMd, manualBackdropUrl, imageCredit, chips, genreLabels, publish, unpublish, heroFeatured } = input;
 
   const now = new Date();
   const publishedAt = publish ? now : unpublish ? null : undefined;
@@ -34,6 +35,7 @@ export async function updateEntry(input: UpdateEntryInput) {
       title: entryTitle,
       body_md: bodyMd,
       ...(manualBackdropUrl !== undefined ? { manual_backdrop_url: manualBackdropUrl || null } : {}),
+      ...(imageCredit !== undefined ? { image_credit: imageCredit || null } : {}),
       ...(publish ? { is_published: true, published_at: publishedAt } : {}),
       ...(unpublish ? { is_published: false, published_at: null } : {}),
       ...(heroFeatured !== undefined ? { is_hero_featured: heroFeatured } : {}),

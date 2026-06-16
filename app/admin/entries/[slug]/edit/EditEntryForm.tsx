@@ -20,6 +20,7 @@ interface EntryProps {
   body_md: string;
   manual_backdrop_url: string | null;
   backdrop_url: string | null;
+  image_credit: string | null;
   is_published: boolean;
   published_at: string | null;
 }
@@ -45,6 +46,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
   const [entryTitle, setEntryTitle] = useState(entry.title);
   const [bodyMd, setBodyMd] = useState(entry.body_md);
   const [manualBackdropUrl, setManualBackdropUrl] = useState(entry.manual_backdrop_url ?? "");
+  const [imageCredit, setImageCredit] = useState(entry.image_credit ?? "");
   const [selectedGenres, setSelectedGenres] = useState<GenreLabel[]>(
     () => initialChips.filter((c) => c.kind === "genre").map((c) => c.label as GenreLabel)
   );
@@ -71,6 +73,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
         entryTitle,
         bodyMd,
         manualBackdropUrl,
+        imageCredit,
         genreLabels: selectedGenres,
       });
       if ("ok" in result) setMessage("儲存成功");
@@ -85,6 +88,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
         entryTitle,
         bodyMd,
         manualBackdropUrl,
+        imageCredit,
         genreLabels: selectedGenres,
         publish: true,
       });
@@ -99,6 +103,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
         slug: entry.slug,
         entryTitle,
         bodyMd,
+        imageCredit,
         genreLabels: selectedGenres,
         unpublish: true,
       });
@@ -184,6 +189,19 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
             className={styles.input}
           />
           <p className={styles.hint}>覆蓋 R2 圖片（留空則使用 R2）</p>
+        </div>
+
+        <div className={styles.backdropOverride}>
+          <label className={styles.label} htmlFor="image-credit">圖片來源</label>
+          <input
+            id="image-credit"
+            type="text"
+            value={imageCredit}
+            onChange={(e) => setImageCredit(e.target.value)}
+            placeholder="© 發行商 / 攝影師"
+            className={styles.input}
+          />
+          <p className={styles.hint}>顯示於封面右下角（版權聲明）</p>
         </div>
 
         <div className={styles.metaSection}>
