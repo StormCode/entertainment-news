@@ -21,6 +21,7 @@ export function NewEntryForm() {
   const [filmError, setFilmError] = useState("");
   const [entryTitle, setEntryTitle] = useState("");
   const [bodyMd, setBodyMd] = useState("");
+  const [manualBackdropUrl, setManualBackdropUrl] = useState("");
   const [imageCredit, setImageCredit] = useState("");
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -39,7 +40,7 @@ export function NewEntryForm() {
 
   function handleSaveDraft() {
     startTransition(async () => {
-      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, imageCredit, publish: false });
+      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, manualBackdropUrl, imageCredit, publish: false });
       if ("slug" in result) {
         // saved; could show brief inline confirmation
       }
@@ -48,7 +49,7 @@ export function NewEntryForm() {
 
   function handlePublish() {
     startTransition(async () => {
-      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, imageCredit, publish: true });
+      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, manualBackdropUrl, imageCredit, publish: true });
       if ("slug" in result) {
         router.push(`/entries/${result.slug}`);
       }
@@ -86,6 +87,19 @@ export function NewEntryForm() {
           {!film && !filmError && <p className={styles.hint}>貼入網址後自動填入片名、導演、海報</p>}
 
           <div className={styles.tmdbInput} style={{ marginTop: "20px" }}>
+            <label className={styles.label} htmlFor="manual-backdrop">手動封面圖 URL</label>
+            <input
+              id="manual-backdrop"
+              type="url"
+              value={manualBackdropUrl}
+              onChange={(e) => setManualBackdropUrl(e.target.value)}
+              placeholder="https://..."
+              className={styles.input}
+            />
+            <p className={styles.hint}>覆蓋 TMDB 圖片（留空則使用 TMDB）</p>
+          </div>
+
+          <div className={styles.tmdbInput} style={{ marginTop: "12px" }}>
             <label className={styles.label} htmlFor="image-credit">圖片來源</label>
             <input
               id="image-credit"
