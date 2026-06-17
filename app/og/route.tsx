@@ -15,24 +15,19 @@ const GOLD = "#c9a96e";
 const SITE = "散場之後";
 const TMDB_BASE = "https://image.tmdb.org/t/p/w1280";
 
-// Fetch a Noto Serif TC subset containing only the characters we need.
-// Google Fonts &text= returns a tiny woff2 with only those glyphs.
+// Fetch a Noto Serif TC subset for the characters we need.
+// Google Fonts returns truetype format when no browser UA is sent.
 async function fetchFont(text: string): Promise<ArrayBuffer | null> {
   try {
     const css = await fetch(
       `https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&text=${encodeURIComponent(text)}`,
-      {
-        headers: {
-          // Google Fonts requires a browser UA to return woff2
-          "User-Agent":
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        },
-      }
+      { signal: AbortSignal.timeout(4000) }
     ).then((r) => r.text());
 
-    const match = css.match(/src: url\(([^)]+)\) format\('woff2'\)/);
+    // Match any supported font format (truetype, woff, woff2, opentype)
+    const match = css.match(/src: url\(([^)]+)\) format\('[^']+'\)/);
     if (!match) return null;
-    return fetch(match[1]).then((r) => r.arrayBuffer());
+    return fetch(match[1], { signal: AbortSignal.timeout(4000) }).then((r) => r.arrayBuffer());
   } catch {
     return null;
   }
@@ -89,10 +84,17 @@ export async function GET(req: NextRequest) {
     .join("");
   const fontData = await fetchFont(allText);
 
-  const fonts = fontData
-    ? ([{ name: "Noto Serif TC", data: fontData, weight: 700 as const, style: "normal" as const }])
-    : [];
+  if (!fontData) {
+    // Font fetch failed — redirect to homepage rather than crash with empty fonts
+    return new Response(null, {
+      status: 302,
+      headers: { Location: process.env.NEXT_PUBLIC_SITE_URL ?? "/" },
+    });
+  }
 
+  const fonts = [{ name: "Noto Serif TC", data: fontData, weight: 700 as const, style: "normal" as const }];
+
+  try {
   return new ImageResponse(
     (
       <div
@@ -226,4 +228,10 @@ export async function GET(req: NextRequest) {
     ),
     { width: OG_W, height: OG_H, fonts }
   );
+  } catch {
+    return new Response(null, {
+      status: 302,
+      headers: { Location: process.env.NEXT_PUBLIC_SITE_URL ?? "/" },
+    });
+  }
 }

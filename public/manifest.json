@@ -1,0 +1,16 @@
+{
+  "name": "散場之後",
+  "short_name": "散場之後",
+  "description": "一份個人藝術電影日誌・每夜更新",
+  "start_url": "/",
+  "display": "browser",
+  "theme_color": "#0c0a08",
+  "background_color": "#0c0a08",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "256x256",
+      "type": "image/x-icon"
+    }
+  ]
+}

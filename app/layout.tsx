@@ -27,6 +27,12 @@ export const metadata: Metadata = {
     template: "%s — 散場之後",
   },
   description: "一份個人藝術電影日誌・每夜更新",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "散場之後",
+  },
   alternates: {
     types: {
       "application/rss+xml": `${SITE_URL}/rss.xml`,
