@@ -1,6 +1,6 @@
 import { Masthead } from "@/components/layout/Masthead";
 import { EntryCard } from "@/components/entries/EntryCard";
-import { searchEntries } from "@/lib/queries/entries";
+import { searchEntries, type EntryWithFilm } from "@/lib/queries/entries";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +17,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { q } = await searchParams;
   const query = q?.trim() ?? "";
 
-  let results = [];
+  let results: EntryWithFilm[] = [];
   if (query) {
     try {
       results = await searchEntries(query);
