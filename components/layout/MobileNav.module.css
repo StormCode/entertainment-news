@@ -183,6 +183,47 @@
   background: rgba(201, 169, 110, 0.06);
 }
 
+/* ── Drawer search ────────────────────────────────────────────── */
+
+.drawerSearch {
+  padding: 16px 24px;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.drawerSearchInput {
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--line-strong);
+  outline: none;
+  font-size: 14px;
+  color: var(--ink);
+  padding: 4px 0 6px;
+  appearance: none;
+}
+
+.drawerSearchInput::placeholder {
+  color: var(--muted);
+}
+
+.drawerSearchInput::-webkit-search-cancel-button {
+  display: none;
+}
+
+.drawerSearchInput:focus {
+  border-bottom-color: var(--gold);
+}
+
 /* ── Footer ───────────────────────────────────────────────────── */
 
 .drawerFooter {

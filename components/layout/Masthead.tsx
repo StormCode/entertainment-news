@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MobileNav } from "./MobileNav";
+import { SearchToggle } from "./SearchToggle";
 import styles from "./Masthead.module.css";
 
 const NAV_ITEMS = [
@@ -37,6 +38,7 @@ export function Masthead() {
               {item.label}
             </Link>
           ))}
+          <SearchToggle />
         </nav>
       </div>
 

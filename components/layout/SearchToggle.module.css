@@ -1,0 +1,81 @@
+.wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink);
+  padding: 2px;
+  transition: color 0.18s;
+}
+
+.iconBtn:hover {
+  color: var(--gold);
+}
+
+.iconBtnActive {
+  color: var(--gold);
+}
+
+.form {
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.input {
+  width: 220px;
+  background: none;
+  border: none;
+  border-bottom: 1.5px solid var(--gold);
+  outline: none;
+  font-size: 13px;
+  color: var(--ink);
+  padding: 4px 4px 8px 0;
+  appearance: none;
+  transform-origin: left;
+  animation: expandLR 0.22s ease-out both;
+}
+
+.input::placeholder {
+  color: var(--muted);
+}
+
+.input::-webkit-search-cancel-button {
+  display: none;
+}
+
+@keyframes expandLR {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 1; }
+}
+
+.inputClosing {
+  animation: collapseLR 0.2s ease-in both;
+}
+
+@keyframes collapseLR {
+  from { transform: scaleX(1); opacity: 1; }
+  to   { transform: scaleX(0); opacity: 0; }
+}

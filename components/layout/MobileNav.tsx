@@ -106,6 +106,18 @@ export function MobileNav() {
           ))}
         </nav>
 
+        <form action="/search" method="GET" className={styles.drawerSearch} role="search">
+          <label htmlFor="mobile-search" className={styles.srOnly}>搜尋</label>
+          <input
+            id="mobile-search"
+            type="search"
+            name="q"
+            placeholder="搜尋片名、導演…"
+            className={styles.drawerSearchInput}
+            aria-label="搜尋文章"
+          />
+        </form>
+
         <div className={styles.drawerFooter}>
           <span className={styles.footerMeta}>est. 2026</span>
         </div>

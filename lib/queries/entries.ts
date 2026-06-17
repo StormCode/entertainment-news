@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { entries, films, entryChips } from "@/db/schema";
-import { eq, desc, and, inArray, ne } from "drizzle-orm";
+import { eq, desc, and, inArray, ne, or, ilike } from "drizzle-orm";
 
 export type EntryWithFilm = {
   id: number;
@@ -258,6 +258,58 @@ export async function getEntriesByDirector(director: string, excludeEntryId: num
     slug: r.slug,
     title: r.title,
     backdropUrl: r.backdropUrl,
+    publishedAt: r.publishedAt,
+    film: r.filmTitle
+      ? {
+          title: r.filmTitle,
+          titleZh: r.filmTitleZh,
+          director: r.filmDirector,
+          runtimeMin: r.filmRuntimeMin,
+          posterUrl: r.filmPosterUrl,
+        }
+      : null,
+    chips: [],
+  }));
+}
+
+export async function searchEntries(query: string): Promise<EntryWithFilm[]> {
+  if (!query.trim()) return [];
+  const q = `%${query.trim()}%`;
+  const rows = await db
+    .select({
+      id: entries.id,
+      slug: entries.slug,
+      title: entries.title,
+      backdropUrl: entries.backdrop_url,
+      manualBackdropUrl: entries.manual_backdrop_url,
+      publishedAt: entries.published_at,
+      filmTitle: films.title,
+      filmTitleZh: films.title_zh,
+      filmDirector: films.director,
+      filmRuntimeMin: films.runtime_min,
+      filmPosterUrl: films.poster_url,
+    })
+    .from(entries)
+    .leftJoin(films, eq(entries.primary_film_id, films.id))
+    .where(
+      and(
+        eq(entries.is_published, true),
+        or(
+          ilike(entries.title, q),
+          ilike(entries.body_md, q),
+          ilike(films.title, q),
+          ilike(films.title_zh, q),
+        )
+      )
+    )
+    .orderBy(desc(entries.published_at))
+    .limit(20);
+
+  return rows.map((r) => ({
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
     publishedAt: r.publishedAt,
     film: r.filmTitle
       ? {

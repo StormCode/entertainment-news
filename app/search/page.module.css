@@ -1,0 +1,76 @@
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 40px 80px;
+}
+
+.form {
+  margin-bottom: 32px;
+}
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 10px;
+}
+
+.searchIcon {
+  flex-shrink: 0;
+  color: var(--muted);
+  margin-right: 12px;
+}
+
+.input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink-strong);
+  letter-spacing: -0.01em;
+  appearance: none;
+}
+
+.input::placeholder {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.meta {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  margin-bottom: 28px;
+}
+
+.hint {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 899px) {
+  .grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 599px) {
+  .main { padding: 32px 20px 64px; }
+  .input { font-size: 22px; }
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+}
