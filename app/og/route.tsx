@@ -79,6 +79,20 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // Pre-fetch backdrop as data URL — satori's lazy external image fetch fails in
+  // Vercel serverless (outside our try-catch), so we materialise it ourselves first.
+  let backdropDataUrl: string | null = null;
+  if (backdropUrl) {
+    try {
+      const imgBuf = await fetch(backdropUrl, { signal: AbortSignal.timeout(4000) }).then((r) => r.arrayBuffer());
+      const b64 = Buffer.from(imgBuf).toString("base64");
+      const mime = backdropUrl.endsWith(".png") ? "image/png" : "image/jpeg";
+      backdropDataUrl = `data:${mime};base64,${b64}`;
+    } catch {
+      // Backdrop unavailable — render without image
+    }
+  }
+
   const allText = [SITE, entryTitle, filmLabel, director]
     .filter(Boolean)
     .join("");
@@ -107,11 +121,11 @@ export async function GET(req: NextRequest) {
           overflow: "hidden",
         }}
       >
-        {/* Backdrop image */}
-        {backdropUrl && (
+        {/* Backdrop image — uses pre-fetched data URL (not external URL) */}
+        {backdropDataUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={backdropUrl}
+            src={backdropDataUrl}
             alt=""
             style={{
               position: "absolute",
@@ -132,7 +146,7 @@ export async function GET(req: NextRequest) {
             left: 0,
             right: 0,
             bottom: 0,
-            background: backdropUrl
+            background: backdropDataUrl
               ? "linear-gradient(to bottom, rgba(12,10,8,0.1) 0%, rgba(12,10,8,0.65) 45%, rgba(12,10,8,0.95) 100%)"
               : "linear-gradient(135deg, #161310 0%, #0c0a08 100%)",
           }}
