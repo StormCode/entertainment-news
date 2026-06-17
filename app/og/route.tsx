@@ -194,7 +194,7 @@ export async function GET(req: NextRequest) {
                   letterSpacing: "0.06em",
                 }}
               >
-                《{filmLabel}》
+                {`《${filmLabel}》`}
               </div>
             )}
             <div
