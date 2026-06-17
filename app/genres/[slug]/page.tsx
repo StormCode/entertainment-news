@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { Masthead } from "@/components/layout/Masthead";
 import { EntryCard } from "@/components/entries/EntryCard";
 import { GENRES, GENRE_SLUG_TO_LABEL } from "@/lib/constants/genres";
@@ -34,7 +35,14 @@ export default async function GenrePage({ params }: { params: Promise<{ slug: st
     <>
       <Masthead />
       <main className={styles.main}>
-        <h1 className={styles.heading}>{label}</h1>
+        <div className={styles.pageHeader}>
+          <Link href="/" className={styles.back} aria-label="返回首頁">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <path d="M11 4L6 9L11 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </Link>
+          <h1 className={styles.heading}>{label}</h1>
+        </div>
         {entries.length === 0 ? (
           <p className={styles.empty}>此類型尚無文章。</p>
         ) : (
