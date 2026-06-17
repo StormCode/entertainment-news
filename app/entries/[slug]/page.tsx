@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Masthead } from "@/components/layout/Masthead";
 import { Chip } from "@/components/ui/Chip";
-import { getEntryBySlug } from "@/lib/queries/entries";
+import { getEntryBySlug, getEntriesByDirector } from "@/lib/queries/entries";
+import { EntryCard } from "@/components/entries/EntryCard";
 import { renderMarkdown } from "@/lib/markdown/render";
 import styles from "./page.module.css";
 
@@ -50,6 +51,10 @@ export default async function EntryPage({ params }: PageProps) {
   const { entry, film, chips } = result;
   const filmTitle = film?.title_zh ?? film?.title ?? entry.title;
   const backdropUrl = entry.backdrop_url ?? entry.manual_backdrop_url;
+
+  const relatedEntries = film?.director
+    ? await getEntriesByDirector(film.director, entry.id)
+    : [];
   const imageCredit = entry.image_credit ?? null;
   const bodyHtml = await renderMarkdown(entry.body_md);
 
@@ -115,6 +120,19 @@ export default async function EntryPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: bodyHtml }}
         aria-label={`${filmTitle} 文章內文`}
       />
+
+      {relatedEntries.length > 0 && (
+        <section className={styles.related} aria-label="同導演其他文章">
+          <h2 className={styles.relatedHeading}>
+            {film?.director} 的其他文章
+          </h2>
+          <div className={styles.relatedGrid}>
+            {relatedEntries.map((e) => (
+              <EntryCard key={e.id} entry={e} />
+            ))}
+          </div>
+        </section>
+      )}
     </>
   );
 }
