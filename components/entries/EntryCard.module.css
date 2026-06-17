@@ -78,7 +78,7 @@
   text-overflow: ellipsis;
 }
 
-/* 「新」badge — top-right corner, 14-day window */
+/* 「新」badge — top-right corner, shown for articles new since last visit */
 .newBadge {
   position: absolute;
   top: 6px;
