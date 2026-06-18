@@ -22,6 +22,7 @@ interface EntryProps {
   backdrop_url: string | null;
   image_credit: string | null;
   is_published: boolean;
+  is_hero_featured: boolean;
   published_at: string | null;
 }
 
@@ -51,6 +52,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
   const [selectedGenres, setSelectedGenres] = useState<GenreLabel[]>(
     () => initialChips.filter((c) => c.kind === "genre").map((c) => c.label as GenreLabel)
   );
+  const [heroFeatured, setHeroFeatured] = useState(entry.is_hero_featured);
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
   const [r2Pending, startR2] = useTransition();
@@ -75,6 +77,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
         manualBackdropUrl,
         imageCredit,
         genreLabels: selectedGenres,
+        heroFeatured,
       });
       if ("ok" in result) setMessage("儲存成功");
     });
@@ -90,6 +93,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
         manualBackdropUrl,
         imageCredit,
         genreLabels: selectedGenres,
+        heroFeatured,
         publish: true,
       });
       router.push(`/entries/${entry.slug}`);
@@ -105,6 +109,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
         bodyMd,
         imageCredit,
         genreLabels: selectedGenres,
+        heroFeatured,
         unpublish: true,
       });
       setMessage("已取消發布");
@@ -202,6 +207,19 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
             className={styles.input}
           />
           <p className={styles.hint}>顯示於封面右下角（版權聲明）</p>
+        </div>
+
+        <div className={styles.heroToggle}>
+          <label className={styles.heroLabel}>
+            <input
+              type="checkbox"
+              checked={heroFeatured}
+              onChange={(e) => setHeroFeatured(e.target.checked)}
+              className={styles.heroCheckbox}
+            />
+            Hero 精選
+          </label>
+          <p className={styles.hint}>勾選後此文章優先顯示於首頁 Hero 輪播</p>
         </div>
 
         <div className={styles.metaSection}>

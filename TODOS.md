@@ -6,16 +6,11 @@ Deferred from plan reviews. Each item has enough context to be picked up cold.
 
 ## Engineering Review TODOs (from /plan-eng-review 2026-06-13)
 
-### ~~TODO-E1: /admin/health pipeline status page~~ ✓ UPGRADED TO v0 (2026-06-14 CEO review)
-**What:** Build a `/admin/health` page that shows pipeline status per job (nightly-backup, restore-test). Data from new `pipeline_health` table written by GHA via `/api/pipeline-health` POST route.
-**Why:** Must exist before the first cron failure — upgraded from v0.1 to v0 mandatory in CEO review.
-**Target:** v0 (before launch). See CEO plan: `~/.gstack/projects/StormCode-entertainment-news/ceo-plans/2026-06-14-v0-launch-and-genre.md`
-**Spec:**
-- `pipeline_health` table: `(name TEXT PK, last_run_at TIMESTAMPTZ, status TEXT)` — status: `'success' | 'failure'`
-- `/api/pipeline-health` POST route: `Authorization: Bearer $PIPELINE_HEALTH_SECRET`; UPSERT on name; 401 if bad token
-- `/admin/health` page: `export const dynamic = 'force-dynamic'`; shows red/orange/green per row; alert thresholds: nightly backup >48h, restore-test >14 days
-- Admin auth: Vercel Deployment Protection (no code needed)
-- Add `PIPELINE_HEALTH_SECRET=` to `.env.example`
+### ~~TODO-E1: /admin/health pipeline status page~~ ✓ DONE (2026-06-18)
+已交付：`app/admin/health/page.tsx`（force-dynamic、紅/橙/綠 badge、48h/14d 閾值）、`app/api/pipeline-health/route.ts`（Bearer auth UPSERT）、`db/schema/pipeline-health.ts`、migration `0001_funny_shooting_star.sql`、`.env.example` 含 `PIPELINE_HEALTH_SECRET=`。
+
+### ~~TODO-E3: admin hero-featured toggle~~ ✓ DONE (2026-06-18)
+已交付：`EditEntryForm.tsx` 加入 Hero 精選 checkbox（`is_hero_featured`）；`updateEntry` action 已支援 `heroFeatured` 參數；CSS `heroToggle` 樣式加入 `edit.module.css`。
 
 ### ~~TODO-E2: scripts/verify-restore.sh~~ ✓ DONE (Day 6)
 Delivered: `scripts/verify-restore.sh`, `.github/workflows/nightly-backup.yml`,
@@ -29,11 +24,8 @@ local testing. Required GHA secrets: `DATABASE_URL_DIRECT`, `R2_ENDPOINT`,
 
 ## Design Review TODOs (from /plan-design-review 2026-06-13)
 
-### TODO-D3: GenreGrid — 重新啟用類別連結（v0.1 時）
-**What:** 將 `components/genres/GenreGrid.tsx` 的 `<div>` 改回 `<Link href={/genres/${slug}}>`, 移除 `cardTooltip` span 和 disabled 相關 CSS（`.cardTooltip`, `cursor: default`, tooltip 邏輯）。
-**Why:** v0 中 /genres/[slug] 頁面尚未實作，因此暫時禁用連結避免 404。v0.1 實作篩選頁面後需同步更新。
-**Target:** v0.1（/genres/[genre] 頁面完成後）。
-**Context:** 禁用邏輯在 GenreGrid.tsx 第 16-19 行有 v0.1 更新提示的 comment。
+### ~~TODO-D3: GenreGrid — 重新啟用類別連結~~ ✓ DONE (已完成)
+`GenreGrid.tsx` 已使用 `<Link href={/genres/${slug}}>` 且 `app/genres/[slug]/page.tsx` 已存在。
 
 ---
 

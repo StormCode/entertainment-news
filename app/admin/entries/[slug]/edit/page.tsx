@@ -39,6 +39,7 @@ export default async function EditEntryPage({ params }: Props) {
         backdrop_url: entry.backdrop_url,
         image_credit: entry.image_credit ?? null,
         is_published: entry.is_published,
+        is_hero_featured: entry.is_hero_featured,
         published_at: entry.published_at?.toISOString() ?? null,
       }}
       film={film ? {
