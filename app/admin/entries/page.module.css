@@ -137,6 +137,16 @@
   border-radius: 10px;
 }
 
+.badgeHero {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: rgba(201, 169, 110, 0.25);
+  color: var(--gold);
+  border-radius: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
 .btnEdit {
   padding: 6px 14px;
   background: transparent;

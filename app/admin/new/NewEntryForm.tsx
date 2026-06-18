@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Toast } from "@/components/ui/Toast";
 import { fetchFilmData, saveEntry } from "./actions";
+import { GENRES, type GenreLabel } from "@/lib/constants/genres";
 import styles from "./page.module.css";
 
 interface FilmPreview {
@@ -23,8 +24,15 @@ export function NewEntryForm() {
   const [bodyMd, setBodyMd] = useState("");
   const [manualBackdropUrl, setManualBackdropUrl] = useState("");
   const [imageCredit, setImageCredit] = useState("");
+  const [selectedGenres, setSelectedGenres] = useState<GenreLabel[]>([]);
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  function toggleGenre(label: GenreLabel) {
+    setSelectedGenres((prev) =>
+      prev.includes(label) ? prev.filter((g) => g !== label) : [...prev, label]
+    );
+  }
 
   async function handleTmdbBlur() {
     if (!tmdbUrl.trim()) return;
@@ -40,16 +48,16 @@ export function NewEntryForm() {
 
   function handleSaveDraft() {
     startTransition(async () => {
-      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, manualBackdropUrl, imageCredit, publish: false });
+      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, manualBackdropUrl, imageCredit, genreLabels: selectedGenres, publish: false });
       if ("slug" in result) {
-        // saved; could show brief inline confirmation
+        router.push(`/admin/entries/${result.slug}/edit`);
       }
     });
   }
 
   function handlePublish() {
     startTransition(async () => {
-      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, manualBackdropUrl, imageCredit, publish: true });
+      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, manualBackdropUrl, imageCredit, genreLabels: selectedGenres, publish: true });
       if ("slug" in result) {
         router.push(`/entries/${result.slug}`);
       }
@@ -110,6 +118,22 @@ export function NewEntryForm() {
               className={styles.input}
             />
             <p className={styles.hint}>顯示於封面右下角（版權聲明）</p>
+          </div>
+          <div className={styles.genreSection}>
+            <p className={styles.panelHeading}>類型</p>
+            <div className={styles.genreGrid}>
+              {GENRES.map(({ label }) => (
+                <label key={label} className={styles.genreCheckLabel}>
+                  <input
+                    type="checkbox"
+                    checked={selectedGenres.includes(label)}
+                    onChange={() => toggleGenre(label)}
+                    className={styles.genreCheckbox}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
           </div>
         </div>
       </aside>

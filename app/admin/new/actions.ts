@@ -5,7 +5,7 @@ import { db } from "@/db";
 import { films, entries } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { fetchTmdbFilm } from "@/lib/tmdb";
-import { recomputeChips } from "@/lib/chips/recompute";
+import { recomputeGenreChips } from "@/lib/chips/recompute";
 import { uploadFilmImages } from "@/lib/images/r2-upload";
 
 // Fetch TMDB data for admin autofill
@@ -29,11 +29,12 @@ interface SaveEntryInput {
   bodyMd: string;
   manualBackdropUrl?: string;
   imageCredit?: string;
+  genreLabels?: string[];
   publish: boolean;
 }
 
 export async function saveEntry(input: SaveEntryInput) {
-  const { tmdbUrl, titleZh, entryTitle, bodyMd, manualBackdropUrl, imageCredit, publish } = input;
+  const { tmdbUrl, titleZh, entryTitle, bodyMd, manualBackdropUrl, imageCredit, genreLabels, publish } = input;
 
   let filmId: number | null = null;
 
@@ -112,6 +113,10 @@ export async function saveEntry(input: SaveEntryInput) {
       published_at: publish ? new Date() : null,
     })
     .returning({ id: entries.id, slug: entries.slug });
+
+  if (genreLabels && genreLabels.length > 0) {
+    await recomputeGenreChips(entry.id, genreLabels);
+  }
 
   if (publish) {
     revalidatePath("/");

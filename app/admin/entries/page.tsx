@@ -14,6 +14,7 @@ export default async function AdminEntriesPage() {
     slug: string;
     title: string;
     is_published: boolean;
+    is_hero_featured: boolean;
     published_at: Date | null;
     filmTitle: string | null;
   }> = [];
@@ -25,6 +26,7 @@ export default async function AdminEntriesPage() {
         slug: entries.slug,
         title: entries.title,
         is_published: entries.is_published,
+        is_hero_featured: entries.is_hero_featured,
         published_at: entries.published_at,
         filmTitle: films.title,
       })
@@ -65,6 +67,9 @@ export default async function AdminEntriesPage() {
               <span className={row.is_published ? styles.badgePublished : styles.badgeDraft}>
                 {row.is_published ? "已發布" : "草稿"}
               </span>
+              {row.is_hero_featured && (
+                <span className={styles.badgeHero}>Hero</span>
+              )}
               {row.filmTitle && (
                 <span className={styles.filmTag}>{row.filmTitle}</span>
               )}
