@@ -7,7 +7,6 @@ const NAV_ITEMS = [
   { label: "最新", href: "/" },
   { label: "導演", href: "/directors" },
   { label: "影展", href: "/festivals" },
-  { label: "串流", href: "/streaming" },
   { label: "典藏", href: "/archive" },
   { label: "RSS", href: "/rss.xml" },
 ];
