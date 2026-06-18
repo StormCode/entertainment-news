@@ -39,10 +39,10 @@ export default async function DirectorsPage() {
               <li key={d.slug}>
                 <Link href={`/directors/${d.slug}`} className={styles.card}>
                   <div className={styles.poster}>
-                    {d.posterUrl ? (
+                    {d.photoUrl ? (
                       <Image
-                        src={d.posterUrl}
-                        alt={`${d.name} 代表作海報`}
+                        src={d.photoUrl}
+                        alt={d.name}
                         fill
                         sizes="(max-width: 599px) 40vw, (max-width: 899px) 20vw, 14vw"
                         className={styles.posterImg}

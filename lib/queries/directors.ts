@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { entries, films, entryChips } from "@/db/schema";
+import { entries, films, entryChips, directors } from "@/db/schema";
 import { eq, desc, and, isNotNull, inArray, sql } from "drizzle-orm";
 import { directorToSlug } from "@/lib/directors";
 import type { EntryWithFilm } from "./entries";
@@ -8,7 +8,7 @@ export type DirectorSummary = {
   name: string;
   slug: string;
   entryCount: number;
-  posterUrl: string | null;
+  photoUrl: string | null;
 };
 
 export async function getDirectors(): Promise<DirectorSummary[]> {
@@ -16,12 +16,13 @@ export async function getDirectors(): Promise<DirectorSummary[]> {
     .select({
       director: films.director,
       entryCount: sql<number>`cast(count(${entries.id}) as int)`,
-      posterUrl: sql<string | null>`max(${films.poster_url})`,
+      photoUrl: directors.photo_url,
     })
     .from(entries)
     .innerJoin(films, eq(entries.primary_film_id, films.id))
+    .leftJoin(directors, eq(directors.name, films.director))
     .where(and(eq(entries.is_published, true), isNotNull(films.director)))
-    .groupBy(films.director)
+    .groupBy(films.director, directors.photo_url)
     .orderBy(sql`count(${entries.id}) desc`, films.director);
 
   return rows
@@ -30,7 +31,7 @@ export async function getDirectors(): Promise<DirectorSummary[]> {
       name: r.director!,
       slug: directorToSlug(r.director!),
       entryCount: r.entryCount,
-      posterUrl: r.posterUrl,
+      photoUrl: r.photoUrl,
     }));
 }
 
