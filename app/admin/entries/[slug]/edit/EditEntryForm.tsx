@@ -69,50 +69,63 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
 
   function handleSave() {
     startTransition(async () => {
-      const result = await updateEntry({
-        entryId: entry.id,
-        slug: entry.slug,
-        entryTitle,
-        bodyMd,
-        manualBackdropUrl,
-        imageCredit,
-        genreLabels: selectedGenres,
-        heroFeatured,
-      });
-      if ("ok" in result) setMessage("儲存成功");
+      try {
+        const result = await updateEntry({
+          entryId: entry.id,
+          slug: entry.slug,
+          entryTitle,
+          bodyMd,
+          manualBackdropUrl,
+          imageCredit,
+          genreLabels: selectedGenres,
+          heroFeatured,
+        });
+        if ("ok" in result) setMessage("儲存成功");
+        else setMessage("儲存失敗，請再試");
+      } catch {
+        setMessage("儲存失敗，請再試");
+      }
     });
   }
 
   function handlePublish() {
     startTransition(async () => {
-      await updateEntry({
-        entryId: entry.id,
-        slug: entry.slug,
-        entryTitle,
-        bodyMd,
-        manualBackdropUrl,
-        imageCredit,
-        genreLabels: selectedGenres,
-        heroFeatured,
-        publish: true,
-      });
-      router.push(`/entries/${entry.slug}`);
+      try {
+        await updateEntry({
+          entryId: entry.id,
+          slug: entry.slug,
+          entryTitle,
+          bodyMd,
+          manualBackdropUrl,
+          imageCredit,
+          genreLabels: selectedGenres,
+          heroFeatured,
+          publish: true,
+        });
+        router.push(`/entries/${entry.slug}`);
+      } catch {
+        setMessage("發布失敗，請再試");
+      }
     });
   }
 
   function handleUnpublish() {
     startTransition(async () => {
-      await updateEntry({
-        entryId: entry.id,
-        slug: entry.slug,
-        entryTitle,
-        bodyMd,
-        imageCredit,
-        genreLabels: selectedGenres,
-        heroFeatured,
-        unpublish: true,
-      });
-      setMessage("已取消發布");
+      try {
+        await updateEntry({
+          entryId: entry.id,
+          slug: entry.slug,
+          entryTitle,
+          bodyMd,
+          imageCredit,
+          genreLabels: selectedGenres,
+          heroFeatured,
+          unpublish: true,
+        });
+        setMessage("已取消發布");
+      } catch {
+        setMessage("取消發布失敗，請再試");
+      }
     });
   }
 
