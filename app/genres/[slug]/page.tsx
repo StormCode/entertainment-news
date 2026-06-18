@@ -4,6 +4,7 @@ import { Masthead } from "@/components/layout/Masthead";
 import { EntryCard } from "@/components/entries/EntryCard";
 import { GENRES, GENRE_SLUG_TO_LABEL } from "@/lib/constants/genres";
 import { getEntriesByGenre } from "@/lib/queries/entries";
+import { LazyReveal } from "@/components/ui/LazyReveal";
 import styles from "./page.module.css";
 
 export const revalidate = 14400;
@@ -46,11 +47,13 @@ export default async function GenrePage({ params }: { params: Promise<{ slug: st
         {entries.length === 0 ? (
           <p className={styles.empty}>此類型尚無文章。</p>
         ) : (
-          <div className={styles.grid}>
-            {entries.map((entry) => (
-              <EntryCard key={entry.id} entry={entry} />
-            ))}
-          </div>
+          <LazyReveal>
+            <div className={styles.grid}>
+              {entries.map((entry) => (
+                <EntryCard key={entry.id} entry={entry} />
+              ))}
+            </div>
+          </LazyReveal>
         )}
       </main>
     </>

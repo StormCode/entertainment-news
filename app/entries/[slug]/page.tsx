@@ -5,6 +5,7 @@ import { Chip } from "@/components/ui/Chip";
 import { getEntryBySlug, getEntriesByDirector } from "@/lib/queries/entries";
 import { EntryCard } from "@/components/entries/EntryCard";
 import { renderMarkdown } from "@/lib/markdown/render";
+import { LazyReveal } from "@/components/ui/LazyReveal";
 import styles from "./page.module.css";
 
 export const revalidate = 14400;
@@ -122,16 +123,18 @@ export default async function EntryPage({ params }: PageProps) {
       />
 
       {relatedEntries.length > 0 && (
-        <section className={styles.related} aria-label="同導演其他文章">
-          <h2 className={styles.relatedHeading}>
-            {film?.director} 的其他文章
-          </h2>
-          <div className={styles.relatedGrid}>
-            {relatedEntries.map((e) => (
-              <EntryCard key={e.id} entry={e} />
-            ))}
-          </div>
-        </section>
+        <LazyReveal>
+          <section className={styles.related} aria-label="同導演其他文章">
+            <h2 className={styles.relatedHeading}>
+              {film?.director} 的其他文章
+            </h2>
+            <div className={styles.relatedGrid}>
+              {relatedEntries.map((e) => (
+                <EntryCard key={e.id} entry={e} />
+              ))}
+            </div>
+          </section>
+        </LazyReveal>
       )}
     </>
   );

@@ -7,6 +7,7 @@ import { GenreGrid } from "@/components/genres/GenreGrid";
 import { HeroCarousel } from "@/components/hero/HeroCarousel";
 import { HeroSkeleton, EntryCardSkeleton } from "@/components/skeleton";
 import { getPublishedEntries, getHeroEntries } from "@/lib/queries/entries";
+import { LazyReveal } from "@/components/ui/LazyReveal";
 import styles from "./page.module.css";
 
 
@@ -59,21 +60,25 @@ export default function HomePage() {
 
       {/* Poster wall — full-width, no sidebar */}
       <main id="main-content" className={styles.main} aria-label="文章牆">
-        <Suspense
-          fallback={
-            <div className={styles.entryGrid}>
-              {[...Array(16)].map((_, i) => (
-                <EntryCardSkeleton key={i} />
-              ))}
-            </div>
-          }
-        >
-          <EntryGrid />
-        </Suspense>
+        <LazyReveal>
+          <Suspense
+            fallback={
+              <div className={styles.entryGrid}>
+                {[...Array(16)].map((_, i) => (
+                  <EntryCardSkeleton key={i} />
+                ))}
+              </div>
+            }
+          >
+            <EntryGrid />
+          </Suspense>
+        </LazyReveal>
       </main>
 
       {/* Genre discovery — bottom of page */}
-      <GenreGrid />
+      <LazyReveal>
+        <GenreGrid />
+      </LazyReveal>
     </>
   );
 }
