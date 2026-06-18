@@ -1,0 +1,26 @@
+/* 確認在 fold 以下後才設為不可見，避免 FOUC */
+.ready > * > * {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+/* 捲入後：nth-child stagger（上限 200ms） */
+.visible > * > * {
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.visible > * > *:nth-child(1)   { opacity: 1; transform: none; transition-delay: 0ms; }
+.visible > * > *:nth-child(2)   { opacity: 1; transform: none; transition-delay: 40ms; }
+.visible > * > *:nth-child(3)   { opacity: 1; transform: none; transition-delay: 80ms; }
+.visible > * > *:nth-child(4)   { opacity: 1; transform: none; transition-delay: 120ms; }
+.visible > * > *:nth-child(5)   { opacity: 1; transform: none; transition-delay: 160ms; }
+.visible > * > *:nth-child(n+6) { opacity: 1; transform: none; transition-delay: 200ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ready > * > *,
+  .visible > * > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
