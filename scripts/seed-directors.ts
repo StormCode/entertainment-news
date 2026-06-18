@@ -8,7 +8,7 @@
 
 import { db } from "../db";
 import { films, directors } from "../db/schema";
-import { isNotNull, sql } from "drizzle-orm";
+import { isNotNull, sql, eq } from "drizzle-orm";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
@@ -27,18 +27,29 @@ function getR2Client(): S3Client {
   });
 }
 
-async function fetchTmdbPersonId(name: string): Promise<{ id: number; profilePath: string | null } | null> {
+async function fetchDirectorFromCredits(directorName: string): Promise<{ id: number; profilePath: string | null } | null> {
   const apiKey = process.env.TMDB_API_KEY;
   if (!apiKey) throw new Error("TMDB_API_KEY not set");
 
-  const res = await fetch(
-    `${TMDB_BASE}/search/person?query=${encodeURIComponent(name)}&api_key=${apiKey}`
-  );
-  if (!res.ok) return null;
-  const data = await res.json();
-  const person = data.results?.[0];
-  if (!person) return null;
-  return { id: person.id, profilePath: person.profile_path ?? null };
+  // Look up all films for this director, use the first one's credits to get
+  // the canonical TMDB person ID — more accurate than name-based person search
+  const filmRows = await db
+    .select({ tmdb_id: films.tmdb_id })
+    .from(films)
+    .where(eq(films.director, directorName));
+
+  for (const film of filmRows) {
+    if (!film.tmdb_id) continue;
+    const res = await fetch(`${TMDB_BASE}/movie/${film.tmdb_id}/credits?api_key=${apiKey}`);
+    if (!res.ok) continue;
+    const data = await res.json();
+    const person = data.crew?.find(
+      (c: { job: string; name: string; id: number; profile_path: string | null }) =>
+        c.job === "Director" && c.name === directorName
+    );
+    if (person) return { id: person.id, profilePath: person.profile_path ?? null };
+  }
+  return null;
 }
 
 async function uploadPhoto(tmdbPersonId: number, profilePath: string): Promise<string | null> {
@@ -84,8 +95,8 @@ async function main() {
       .values({ name, updated_at: new Date() })
       .onConflictDoNothing();
 
-    // Fetch TMDB person
-    const person = await fetchTmdbPersonId(name);
+    // Fetch TMDB person via film credits (avoids name-search false matches)
+    const person = await fetchDirectorFromCredits(name);
     if (!person) {
       console.log(`  TMDB: not found`);
       continue;
