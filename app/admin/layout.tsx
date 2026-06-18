@@ -14,8 +14,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Link href="/admin/entries" className={styles.navBrand}>散場之後</Link>
         <div className={styles.navLinks}>
           <Link href="/admin/entries" className={styles.navLink}>文章</Link>
-          <Link href="/admin/streaming" className={styles.navLink}>串流</Link>
-          <Link href="/admin/health" className={styles.navLink}>健康</Link>
+<Link href="/admin/health" className={styles.navLink}>健康</Link>
           <Link href="/admin/new" className={styles.navCta}>＋ 新增文章</Link>
         </div>
       </nav>
