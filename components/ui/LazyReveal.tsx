@@ -14,24 +14,37 @@ export function LazyReveal({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight) {
-      el.classList.add(styles.visible);
-      return;
-    }
+    let observer: IntersectionObserver | undefined;
 
-    el.classList.add(styles.ready);
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add(styles.visible);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
+    // Defer measurement by one frame so layout is stable before we check
+    // whether the element is above or below the fold. Without this, headless
+    // and prerender environments can return stale getBoundingClientRect values,
+    // causing above-fold content to receive the `ready` (opacity:0) class.
+    const rafId = requestAnimationFrame(() => {
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        el.classList.add(styles.visible);
+        return;
+      }
+
+      el.classList.add(styles.ready);
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            el.classList.add(styles.visible);
+            observer?.disconnect();
+          }
+        },
+        { threshold: 0.1 }
+      );
+      observer.observe(el);
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      observer?.disconnect();
+    };
   }, []);
 
   return <div ref={ref}>{children}</div>;

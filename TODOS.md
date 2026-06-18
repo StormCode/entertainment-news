@@ -43,6 +43,17 @@ local testing. Required GHA secrets: `DATABASE_URL_DIRECT`, `R2_ENDPOINT`,
 
 ---
 
+## QA Deferred Issues (from /qa 2026-06-18)
+
+### TODO-QA1: LazyReveal viewport check triggers in headless/prerender contexts
+**What:** `LazyReveal.tsx` uses `getBoundingClientRect()` in `useEffect` to detect above-fold content. In headless browsers and prerender contexts, element positions may not match expected values, causing `ready` (opacity:0) to apply to visible content. Hero section appears invisible on initial load in headless mode.
+**Why:** Not a blocker for real users (IntersectionObserver fires normally after layout). Could affect social preview scrapers or bots that capture initial render.
+**Target:** Pre-v0.1 launch — low priority.
+**Fix direction:** Add a `requestAnimationFrame` or `setTimeout(0)` delay before the `getBoundingClientRect()` check, or use a CSS-only approach (`@starting-style` / `content-visibility`) for the above-fold fast-path.
+**Context:** `components/ui/LazyReveal.tsx:13-20`. Ref: QA report ISSUE-002.
+
+---
+
 ## Open Questions (unblocked, but note before launch)
 
 - **Editor byline:** Real name / pseudonym / initials? Settle before launch (attribution accrues).
