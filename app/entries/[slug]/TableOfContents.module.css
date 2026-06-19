@@ -43,11 +43,19 @@
   padding: 2px 0;
 }
 
-.link:hover {
+/* Override global a:visited which has higher specificity than .link alone */
+.link:visited {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.link:hover,
+.link:visited:hover {
   color: var(--ink);
 }
 
-.link.active {
+.link.active,
+.link.active:visited {
   color: var(--gold);
 }
 

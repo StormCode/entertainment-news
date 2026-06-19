@@ -13,6 +13,7 @@ export type HeadingItem = { id: string; text: string; depth: 2 | 3 };
 
 const sanitizeSchema = {
   ...defaultSchema,
+  clobberPrefix: "",
   attributes: {
     ...defaultSchema.attributes,
     h2: ["id"],

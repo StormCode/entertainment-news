@@ -16,16 +16,25 @@ export function TableOfContents({ headings }: Props) {
   useEffect(() => {
     if (headings.length === 0) return;
 
+    // Query DOM directly — avoids relying on id matching between prop and DOM
+    // (rehypeSanitize may add "user-content-" prefix before server restarts)
+    const article = document.getElementById("main-content");
+    const headingEls: HTMLElement[] = article
+      ? Array.from(article.querySelectorAll("h2[id], h3[id]"))
+      : [];
+
     function update() {
-      let active = "";
-      for (const { id } of headings) {
-        const el = document.getElementById(id);
-        if (!el) continue;
-        if (el.getBoundingClientRect().top <= MASTHEAD_OFFSET + 16) {
-          active = id;
+      if (headingEls.length === 0) {
+        setActiveId(headings[0].id);
+        return;
+      }
+      let activeIdx = 0;
+      for (let i = 0; i < headingEls.length; i++) {
+        if (headingEls[i].getBoundingClientRect().top <= MASTHEAD_OFFSET + 16) {
+          activeIdx = i;
         }
       }
-      setActiveId(active);
+      setActiveId(headings[activeIdx]?.id ?? "");
     }
 
     window.addEventListener("scroll", update, { passive: true });
@@ -35,7 +44,10 @@ export function TableOfContents({ headings }: Props) {
 
   function handleClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
     e.preventDefault();
-    const el = document.getElementById(id);
+    // Try prop id first; fall back to rehypeSanitize's clobber prefix
+    const el =
+      document.getElementById(id) ??
+      document.getElementById(`user-content-${id}`);
     if (!el) return;
     const top = el.getBoundingClientRect().top + window.scrollY - MASTHEAD_OFFSET;
     window.scrollTo({ top, behavior: "smooth" });
