@@ -1,15 +1,7 @@
 import Link from "next/link";
 import { MobileNav } from "./MobileNav";
-import { SearchToggle } from "./SearchToggle";
+import { NavLinks } from "./NavLinks";
 import styles from "./Masthead.module.css";
-
-const NAV_ITEMS = [
-  { label: "最新", href: "/" },
-  { label: "導演", href: "/directors" },
-  { label: "影展", href: "/festivals" },
-  { label: "典藏", href: "/archive" },
-  { label: "RSS", href: "/rss.xml" },
-];
 
 export function Masthead() {
   const now = new Date();
@@ -31,14 +23,7 @@ export function Masthead() {
         <p className={styles.kicker}>after the screening</p>
         <p className={`${styles.tag} ui`}>一份個人藝術電影日誌 · 每夜更新</p>
 
-        <nav className={styles.nav} aria-label="主要導航">
-          {NAV_ITEMS.map((item) => (
-            <Link key={item.href} href={item.href} className={`${styles.navLink} ui`}>
-              {item.label}
-            </Link>
-          ))}
-          <SearchToggle />
-        </nav>
+        <NavLinks />
       </div>
 
       {/* Mobile-only: hamburger button + slide-in drawer (design D10) */}

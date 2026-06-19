@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Serif_TC, Noto_Sans_TC } from "next/font/google";
+import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
 
 // CJK fonts: no `subsets` — next/font types don't expose chinese-traditional
@@ -57,7 +58,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-Hant" className={`${serifTC.variable} ${sansTC.variable}`} suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

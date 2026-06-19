@@ -98,6 +98,11 @@
   text-decoration: none;
 }
 
+.navLinkActive,
+.navLinkActive:visited {
+  color: var(--gold);
+}
+
 /* Tablet: reduce masthead */
 @media (max-width: 899px) {
   .wordmark { font-size: 64px; }
