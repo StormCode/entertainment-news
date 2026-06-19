@@ -10,6 +10,7 @@ export type DirectorSummary = {
   slug: string;
   entryCount: number;
   photoUrl: string | null;
+  tmdbPersonId: number | null;
 };
 
 export async function getDirectors(): Promise<DirectorSummary[]> {
@@ -18,12 +19,13 @@ export async function getDirectors(): Promise<DirectorSummary[]> {
       director: films.director,
       entryCount: sql<number>`cast(count(${entries.id}) as int)`,
       photoUrl: directors.photo_url,
+      tmdbPersonId: directors.tmdb_person_id,
     })
     .from(entries)
     .innerJoin(films, eq(entries.primary_film_id, films.id))
     .leftJoin(directors, eq(directors.name, films.director))
     .where(and(eq(entries.is_published, true), isNotNull(films.director)))
-    .groupBy(films.director, directors.photo_url)
+    .groupBy(films.director, directors.photo_url, directors.tmdb_person_id)
     .orderBy(sql`count(${entries.id}) desc`, films.director);
 
   return rows
@@ -33,6 +35,7 @@ export async function getDirectors(): Promise<DirectorSummary[]> {
       slug: directorToSlug(r.director!),
       entryCount: r.entryCount,
       photoUrl: r.photoUrl,
+      tmdbPersonId: r.tmdbPersonId,
     }));
 }
 
@@ -56,7 +59,7 @@ export async function getEntriesByDirectorName(directorName: string): Promise<En
     .from(entries)
     .innerJoin(films, eq(entries.primary_film_id, films.id))
     .where(and(eq(entries.is_published, true), eq(films.director, directorName)))
-    .orderBy(desc(entries.published_at));
+    .orderBy(sql`${films.release_year} DESC NULLS LAST`, desc(entries.published_at));
 
   if (rows.length === 0) return [];
 
@@ -86,7 +89,56 @@ export async function getEntriesByDirectorName(directorName: string): Promise<En
   }));
 }
 
+export type DirectorTimelineEntry = {
+  id: number;
+  slug: string;
+  title: string;
+  film: {
+    title: string;
+    titleZh: string | null;
+    posterUrl: string | null;
+    releaseYear: number | null;
+    tmdbId: number | null;
+  } | null;
+};
+
+export async function getDirectorTimeline(directorName: string): Promise<DirectorTimelineEntry[]> {
+  const rows = await db
+    .select({
+      id: entries.id,
+      slug: entries.slug,
+      title: entries.title,
+      filmTitle: films.title,
+      filmTitleZh: films.title_zh,
+      filmPosterUrl: films.poster_url,
+      filmReleaseYear: films.release_year,
+      filmTmdbId: films.tmdb_id,
+    })
+    .from(entries)
+    .innerJoin(films, eq(entries.primary_film_id, films.id))
+    .where(and(eq(entries.is_published, true), eq(films.director, directorName)))
+    .orderBy(sql`${films.release_year} DESC NULLS LAST`, desc(entries.published_at));
+
+  return rows.map((r) => ({
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    film: {
+      title: r.filmTitle,
+      titleZh: r.filmTitleZh,
+      posterUrl: r.filmPosterUrl,
+      releaseYear: r.filmReleaseYear,
+      tmdbId: r.filmTmdbId,
+    },
+  }));
+}
+
+export async function getDirectorSummaryBySlug(slug: string): Promise<DirectorSummary | null> {
+  const all = await getDirectors();
+  return all.find((d) => d.slug === slug) ?? null;
+}
+
 export async function resolveDirectorSlug(slug: string): Promise<string | null> {
-  const directors = await getDirectors();
-  return directors.find((d) => d.slug === slug)?.name ?? null;
+  const found = await getDirectorSummaryBySlug(slug);
+  return found?.name ?? null;
 }

@@ -48,7 +48,13 @@ export default async function DirectorsPage() {
                         className={styles.posterImg}
                       />
                     ) : (
-                      <div className={styles.posterPlaceholder} aria-hidden="true" />
+                      <div className={styles.posterPlaceholder} aria-hidden="true">
+                        <span className={styles.posterInitials}>
+                          {d.name.trim().split(/\s+/).length === 1
+                            ? d.name.slice(0, 2)
+                            : (d.name.trim().split(/\s+/)[0][0] + d.name.trim().split(/\s+/).slice(-1)[0][0]).toUpperCase()}
+                        </span>
+                      </div>
                     )}
                   </div>
                   <p className={styles.name}>{d.name}</p>

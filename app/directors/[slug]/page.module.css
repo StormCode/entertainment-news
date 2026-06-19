@@ -1,16 +1,15 @@
 .main {
-  max-width: 1440px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 40px 64px;
+  padding: 40px 40px 80px;
 }
 
+/* Back nav row */
 .pageHeader {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 40px;
 }
 
 .back {
@@ -18,9 +17,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  margin-top: 2px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 1px solid var(--line-strong);
   color: var(--ink);
@@ -34,34 +32,387 @@
   background: rgba(212, 175, 55, 0.06);
 }
 
-.heading {
-  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
-  font-size: 28px;
-  line-height: 1;
-  font-weight: 900;
-  color: var(--ink-strong);
-  margin: 0;
+.backLabel {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
 }
 
-.grid {
+/* Two-panel layout */
+.layout {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem 3rem;
+  grid-template-columns: 220px 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+/* ─── Left sidebar ─── */
+.sidebar {
+  position: sticky;
+  top: 88px;
+}
+
+.photoWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: var(--paper-2);
+  border-top: 2px solid var(--gold);
+  margin-bottom: 20px;
+}
+
+.photoImg {
+  object-fit: cover;
+  object-position: top center;
+}
+
+.photoPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: var(--paper-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photoInitials {
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 52px;
+  font-weight: 900;
+  color: var(--gold);
+  opacity: 0.35;
+  letter-spacing: -0.02em;
+  user-select: none;
+  line-height: 1;
+}
+
+.directorName {
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--ink-strong);
+  margin: 0 0 6px;
+  line-height: 1.25;
+}
+
+.yearRange {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin: 0 0 4px;
+}
+
+.entryCount {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.entryCountDot {
+  color: var(--line-strong);
+  user-select: none;
+}
+
+.filmList {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.filmListLabel {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+}
+
+.filmListItems {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filmListItem {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.filmListYear {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 10px;
+  color: var(--muted);
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+
+.filmListTitle {
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 12px;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.filmListLink {
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 12px;
+  color: var(--ink);
+  line-height: 1.45;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+
+.filmListLink:hover {
+  color: var(--gold);
+  text-decoration: underline;
+  text-decoration-color: rgba(212, 175, 55, 0.4);
+  text-underline-offset: 2px;
+}
+
+/* ─── Right timeline ─── */
+.timeline {
+  position: relative;
+  padding-left: 28px;
+}
+
+/* Vertical line */
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 32px;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    var(--gold) 0%,
+    var(--line) 8%,
+    var(--line) 92%,
+    transparent 100%
+  );
+}
+
+.yearGroup {
+  margin-bottom: 52px;
+}
+
+.yearMarker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+/* Gold dot on the timeline line */
+.yearDot {
+  position: absolute;
+  left: -32px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+.yearLabel {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.yearEntries {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Individual film entry row */
+.filmEntry {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  transition: background 0.18s;
+}
+
+.filmEntry:hover {
+  background: var(--paper-2);
+}
+
+/* Poster link wrapper */
+.entryPosterLink {
+  display: block;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+/* Film poster thumbnail */
+.entryPoster {
+  position: relative;
+  width: 72px;
+  height: 108px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--paper-2);
+  border-top: 2px solid var(--gold);
+  transition: opacity 0.2s;
+}
+
+.entryPosterLink:hover .entryPoster {
+  opacity: 0.85;
+}
+
+.entryPosterImg {
+  object-fit: cover;
+}
+
+.entryPosterPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: var(--paper-2);
+}
+
+/* Entry text */
+.entryInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 2px;
+  min-width: 0;
+}
+
+/* Film name — primary large title → links to TMDB */
+.entryFilmLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.entryFilmName {
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink-strong);
+  line-height: 1.35;
+  margin: 0 0 14px;
+  transition: color 0.18s;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.entryFilmLink:hover .entryFilmName {
+  color: var(--gold);
+}
+
+/* Review title — secondary small subtitle → links to our review */
+.entryReviewLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.entryReviewRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 12px;
+}
+
+.entryReviewIcon {
+  flex-shrink: 0;
+  color: var(--muted);
+  opacity: 0.7;
+  transition: color 0.18s;
+}
+
+.entryReviewLink:hover .entryReviewIcon {
+  color: var(--ink);
+}
+
+.entryReviewTitle {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+
+.entryReviewLink:hover .entryReviewTitle {
+  color: var(--ink-strong);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
 }
 
 .empty {
   color: var(--muted);
   font-style: italic;
+  padding-left: 28px;
 }
 
+/* ─── Tablet ─── */
 @media (max-width: 899px) {
-  .grid { grid-template-columns: 1fr; }
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .sidebar {
+    position: static;
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .photoWrap {
+    margin-bottom: 0;
+  }
+
+  .filmList {
+    grid-column: 1 / -1;
+  }
 }
 
+/* ─── Mobile ─── */
 @media (max-width: 599px) {
-  .main { padding: 24px 12px 48px; }
-  .grid { gap: 1.5rem; }
-  .heading { font-size: 22px; }
-  .back { width: 22px; height: 22px; }
-  .back svg { width: 14px; height: 14px; }
+  .main { padding: 24px 16px 56px; }
+
+  .sidebar {
+    grid-template-columns: 110px 1fr;
+    gap: 16px;
+  }
+
+  .directorName { font-size: 18px; }
+
+  .timeline { padding-left: 20px; }
+  .yearDot { left: -24px; }
+
+  .filmEntry { padding: 10px 8px; gap: 14px; }
+  .entryPoster { width: 60px; height: 90px; }
+  .entryReviewTitle { font-size: 15px; }
 }

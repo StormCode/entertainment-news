@@ -1,3 +1,39 @@
+const TMDB_POSTER_W300 = "https://image.tmdb.org/t/p/w300";
+
+export type TmdbDirectorCredit = {
+  id: number;
+  title: string;
+  release_date: string | null;
+  poster_path: string | null;
+};
+
+export function tmdbPosterUrl(path: string): string {
+  return `${TMDB_POSTER_W300}${path}`;
+}
+
+export async function fetchDirectorFilmography(personId: number): Promise<TmdbDirectorCredit[]> {
+  const apiKey = process.env.TMDB_API_KEY;
+  if (!apiKey) return [];
+  try {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/person/${personId}/movie_credits?api_key=${apiKey}`,
+      { next: { revalidate: 14400 } }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return ((data.crew ?? []) as Array<TmdbDirectorCredit & { job: string }>)
+      .filter((c) => c.job === "Director")
+      .map(({ id, title, release_date, poster_path }) => ({
+        id,
+        title,
+        release_date: release_date ?? null,
+        poster_path: poster_path ?? null,
+      }));
+  } catch {
+    return [];
+  }
+}
+
 export interface TmdbFilm {
   tmdbId: number;
   title: string;
