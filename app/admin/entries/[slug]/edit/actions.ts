@@ -73,13 +73,14 @@ export async function updateFilmPoster(
 
   if (!film?.tmdb_id) return { error: "找不到影片" };
 
-  const { posterUrl } = await uploadFilmImages({
+  const { posterUrl: r2Url } = await uploadFilmImages({
     tmdbId: film.tmdb_id,
     backdropTmdbPath: null,
     posterTmdbPath: tmdbPosterPath,
   });
 
-  if (!posterUrl) return { error: "R2 上傳失敗，請稍後再試" };
+  // R2 may not be configured — fall back to TMDB URL so the poster still updates
+  const posterUrl = r2Url ?? `https://image.tmdb.org/t/p/w500${tmdbPosterPath}`;
 
   await db
     .update(films)

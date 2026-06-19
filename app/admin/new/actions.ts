@@ -62,7 +62,9 @@ export async function saveEntry(input: SaveEntryInput) {
             runtime_min: tmdbFilm.runtimeMin,
             release_year: tmdbFilm.releaseYear,
             backdrop_url: tmdbFilm.backdropPath,  // raw TMDB URL; R2 upload in background
-            poster_url: selectedPosterPath ?? tmdbFilm.posterPath,
+            poster_url: selectedPosterPath
+              ? `https://image.tmdb.org/t/p/w500${selectedPosterPath}`
+              : tmdbFilm.posterPath,
             tmdb_data: tmdbFilm.rawJson,
           })
           .returning({ id: films.id });
