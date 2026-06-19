@@ -31,13 +31,29 @@ export function TableOfContents({ headings }: Props) {
         return;
       }
       const offset = getOffset();
-      let activeIdx = 0;
+      const viewportH = window.innerHeight;
+
+      // Primary: last heading whose top is within the visible viewport (below sticky TOC)
+      let visibleIdx = -1;
       for (let i = 0; i < headingEls.length; i++) {
-        if (headingEls[i].getBoundingClientRect().top <= offset) {
-          activeIdx = i;
+        const top = headingEls[i].getBoundingClientRect().top;
+        if (top >= offset && top < viewportH) {
+          visibleIdx = i;
         }
       }
-      setActiveId(headings[activeIdx]?.id ?? "");
+      if (visibleIdx >= 0) {
+        setActiveId(headings[visibleIdx]?.id ?? "");
+        return;
+      }
+
+      // Fallback: no heading visible — use last one that scrolled above the fold
+      let lastAbove = 0;
+      for (let i = 0; i < headingEls.length; i++) {
+        if (headingEls[i].getBoundingClientRect().top < offset) {
+          lastAbove = i;
+        }
+      }
+      setActiveId(headings[lastAbove]?.id ?? "");
     }
 
     window.addEventListener("scroll", update, { passive: true });
