@@ -11,40 +11,37 @@ interface EntryCardProps {
 export function EntryCard({ entry }: EntryCardProps) {
   const posterUrl = entry.film?.posterUrl ?? null;
   const director = entry.film?.director ?? null;
-  const runtime = entry.film?.runtimeMin ?? null;
+  const releaseYear = entry.film?.releaseYear ?? null;
   const filmTitle = entry.film?.titleZh ?? entry.film?.title ?? entry.title;
+
   return (
     <Link href={`/entries/${entry.slug}`} className={styles.card}>
+      {/* Movie poster — z-index:2, layered on top */}
       <div className={styles.poster}>
         {posterUrl ? (
           <Image
             src={posterUrl}
             alt={`《${filmTitle}》海報`}
             fill
-            sizes="(max-width: 599px) 50vw, (max-width: 899px) 25vw, (max-width: 1199px) 17vw, 13vw"
+            sizes="(max-width: 599px) 100vw, 250px"
             className={styles.posterImg}
           />
         ) : (
           <div className={styles.posterPlaceholder} aria-hidden="true" />
         )}
-
         <NewDot publishedAt={entry.publishedAt} />
-
-        {/* Desktop hover overlay */}
-        <div className={styles.overlay} aria-hidden="true">
-          <p className={styles.overlayTitle}>《{filmTitle}》</p>
-          {(director || runtime) && (
-            <p className={styles.overlayMeta}>
-              {director ?? ""}
-              {director && runtime ? " · " : ""}
-              {runtime ? `${runtime}m` : ""}
-            </p>
-          )}
-        </div>
       </div>
 
-      {/* Mobile caption — always visible, hidden on desktop */}
-      <p className={styles.mobileCaption}>{filmTitle}</p>
+      {/* Article card — z-index:1, slightly behind poster */}
+      <div className={styles.articleCard}>
+        <p className={styles.filmLabel}>{filmTitle}</p>
+        <h2 className={styles.reviewTitle}>{entry.title}</h2>
+        {entry.snippet && <p className={styles.excerpt}>{entry.snippet}</p>}
+        <div className={styles.footer}>
+          {director && <span className={styles.chipDirector}>{director}</span>}
+          {releaseYear && <span className={styles.chipYear}>{releaseYear}</span>}
+        </div>
+      </div>
     </Link>
   );
 }

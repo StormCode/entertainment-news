@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import { entries, films, entryChips } from "@/db/schema";
 import { eq, desc, and, inArray, ne, or, ilike } from "drizzle-orm";
+import { toExcerpt } from "@/lib/excerpt";
 
 export type EntryWithFilm = {
   id: number;
@@ -8,12 +9,14 @@ export type EntryWithFilm = {
   title: string;
   backdropUrl: string | null;
   publishedAt: Date | null;
+  snippet: string | null;
   film: {
     title: string;
     titleZh: string | null;
     director: string | null;
     runtimeMin: number | null;
     posterUrl: string | null;
+    releaseYear: number | null;
   } | null;
   chips: Array<{ label: string; kind: string; isLive: string | null }>;
 };
@@ -24,6 +27,7 @@ export async function getPublishedEntries(limit = 20): Promise<EntryWithFilm[]> 
       id: entries.id,
       slug: entries.slug,
       title: entries.title,
+      bodyMd: entries.body_md,
       backdropUrl: entries.backdrop_url,
       manualBackdropUrl: entries.manual_backdrop_url,
       publishedAt: entries.published_at,
@@ -31,6 +35,7 @@ export async function getPublishedEntries(limit = 20): Promise<EntryWithFilm[]> 
       filmTitleZh: films.title_zh,
       filmDirector: films.director,
       filmRuntime: films.runtime_min,
+      filmReleaseYear: films.release_year,
       filmPosterUrl: films.poster_url,
     })
     .from(entries)
@@ -39,7 +44,6 @@ export async function getPublishedEntries(limit = 20): Promise<EntryWithFilm[]> 
     .orderBy(desc(entries.published_at))
     .limit(limit);
 
-  // Fetch chips per entry in one query
   const entryIds = rows.map((r) => r.id);
   const allChips =
     entryIds.length > 0
@@ -55,6 +59,7 @@ export async function getPublishedEntries(limit = 20): Promise<EntryWithFilm[]> 
     title: r.title,
     backdropUrl: r.backdropUrl ?? r.manualBackdropUrl,
     publishedAt: r.publishedAt,
+    snippet: toExcerpt(r.bodyMd ?? ""),
     film: r.filmTitle
       ? {
           title: r.filmTitle,
@@ -62,6 +67,7 @@ export async function getPublishedEntries(limit = 20): Promise<EntryWithFilm[]> 
           director: r.filmDirector,
           runtimeMin: r.filmRuntime,
           posterUrl: r.filmPosterUrl,
+          releaseYear: r.filmReleaseYear,
         }
       : null,
     chips: allChips
@@ -76,6 +82,7 @@ export async function getHeroEntry(): Promise<EntryWithFilm | null> {
       id: entries.id,
       slug: entries.slug,
       title: entries.title,
+      bodyMd: entries.body_md,
       backdropUrl: entries.backdrop_url,
       manualBackdropUrl: entries.manual_backdrop_url,
       publishedAt: entries.published_at,
@@ -83,6 +90,7 @@ export async function getHeroEntry(): Promise<EntryWithFilm | null> {
       filmTitleZh: films.title_zh,
       filmDirector: films.director,
       filmRuntime: films.runtime_min,
+      filmReleaseYear: films.release_year,
       filmPosterUrl: films.poster_url,
     })
     .from(entries)
@@ -103,8 +111,9 @@ export async function getHeroEntry(): Promise<EntryWithFilm | null> {
     id: r.id,
     slug: r.slug,
     title: r.title,
-    backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,  // manual takes priority
+    backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
     publishedAt: r.publishedAt,
+    snippet: toExcerpt(r.bodyMd ?? ""),
     film: r.filmTitle
       ? {
           title: r.filmTitle,
@@ -112,6 +121,7 @@ export async function getHeroEntry(): Promise<EntryWithFilm | null> {
           director: r.filmDirector,
           runtimeMin: r.filmRuntime,
           posterUrl: r.filmPosterUrl,
+          releaseYear: r.filmReleaseYear,
         }
       : null,
     chips: genreChips.map((c) => ({ label: c.label, kind: c.kind, isLive: c.is_live })),
@@ -119,12 +129,12 @@ export async function getHeroEntry(): Promise<EntryWithFilm | null> {
 }
 
 export async function getHeroEntries(): Promise<EntryWithFilm[]> {
-  // featured first, then newest — always returns up to 5 regardless of is_hero_featured count
   const rows = await db
     .select({
       id: entries.id,
       slug: entries.slug,
       title: entries.title,
+      bodyMd: entries.body_md,
       backdropUrl: entries.backdrop_url,
       manualBackdropUrl: entries.manual_backdrop_url,
       publishedAt: entries.published_at,
@@ -132,6 +142,7 @@ export async function getHeroEntries(): Promise<EntryWithFilm[]> {
       filmTitleZh: films.title_zh,
       filmDirector: films.director,
       filmRuntime: films.runtime_min,
+      filmReleaseYear: films.release_year,
       filmPosterUrl: films.poster_url,
     })
     .from(entries)
@@ -155,6 +166,7 @@ export async function getHeroEntries(): Promise<EntryWithFilm[]> {
     title: r.title,
     backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
     publishedAt: r.publishedAt,
+    snippet: toExcerpt(r.bodyMd ?? ""),
     film: r.filmTitle
       ? {
           title: r.filmTitle,
@@ -162,6 +174,7 @@ export async function getHeroEntries(): Promise<EntryWithFilm[]> {
           director: r.filmDirector,
           runtimeMin: r.filmRuntime,
           posterUrl: r.filmPosterUrl,
+          releaseYear: r.filmReleaseYear,
         }
       : null,
     chips: allChips
@@ -185,6 +198,7 @@ export async function getEntriesByGenre(genreLabel: string): Promise<EntryWithFi
       id: entries.id,
       slug: entries.slug,
       title: entries.title,
+      bodyMd: entries.body_md,
       backdropUrl: entries.backdrop_url,
       manualBackdropUrl: entries.manual_backdrop_url,
       publishedAt: entries.published_at,
@@ -192,6 +206,7 @@ export async function getEntriesByGenre(genreLabel: string): Promise<EntryWithFi
       filmTitleZh: films.title_zh,
       filmDirector: films.director,
       filmRuntime: films.runtime_min,
+      filmReleaseYear: films.release_year,
       filmPosterUrl: films.poster_url,
     })
     .from(entries)
@@ -212,6 +227,7 @@ export async function getEntriesByGenre(genreLabel: string): Promise<EntryWithFi
     title: r.title,
     backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
     publishedAt: r.publishedAt,
+    snippet: toExcerpt(r.bodyMd ?? ""),
     film: r.filmTitle
       ? {
           title: r.filmTitle,
@@ -219,6 +235,7 @@ export async function getEntriesByGenre(genreLabel: string): Promise<EntryWithFi
           director: r.filmDirector,
           runtimeMin: r.filmRuntime,
           posterUrl: r.filmPosterUrl,
+          releaseYear: r.filmReleaseYear,
         }
       : null,
     chips: allChips
@@ -233,12 +250,15 @@ export async function getEntriesByDirector(director: string, excludeEntryId: num
       id: entries.id,
       slug: entries.slug,
       title: entries.title,
+      bodyMd: entries.body_md,
       backdropUrl: entries.backdrop_url,
+      manualBackdropUrl: entries.manual_backdrop_url,
       publishedAt: entries.published_at,
       filmTitle: films.title,
       filmTitleZh: films.title_zh,
       filmDirector: films.director,
       filmRuntimeMin: films.runtime_min,
+      filmReleaseYear: films.release_year,
       filmPosterUrl: films.poster_url,
     })
     .from(entries)
@@ -257,8 +277,9 @@ export async function getEntriesByDirector(director: string, excludeEntryId: num
     id: r.id,
     slug: r.slug,
     title: r.title,
-    backdropUrl: r.backdropUrl,
+    backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
     publishedAt: r.publishedAt,
+    snippet: toExcerpt(r.bodyMd ?? ""),
     film: r.filmTitle
       ? {
           title: r.filmTitle,
@@ -266,6 +287,7 @@ export async function getEntriesByDirector(director: string, excludeEntryId: num
           director: r.filmDirector,
           runtimeMin: r.filmRuntimeMin,
           posterUrl: r.filmPosterUrl,
+          releaseYear: r.filmReleaseYear,
         }
       : null,
     chips: [],
@@ -280,6 +302,7 @@ export async function searchEntries(query: string): Promise<EntryWithFilm[]> {
       id: entries.id,
       slug: entries.slug,
       title: entries.title,
+      bodyMd: entries.body_md,
       backdropUrl: entries.backdrop_url,
       manualBackdropUrl: entries.manual_backdrop_url,
       publishedAt: entries.published_at,
@@ -287,6 +310,7 @@ export async function searchEntries(query: string): Promise<EntryWithFilm[]> {
       filmTitleZh: films.title_zh,
       filmDirector: films.director,
       filmRuntimeMin: films.runtime_min,
+      filmReleaseYear: films.release_year,
       filmPosterUrl: films.poster_url,
     })
     .from(entries)
@@ -311,6 +335,7 @@ export async function searchEntries(query: string): Promise<EntryWithFilm[]> {
     title: r.title,
     backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
     publishedAt: r.publishedAt,
+    snippet: toExcerpt(r.bodyMd ?? ""),
     film: r.filmTitle
       ? {
           title: r.filmTitle,
@@ -318,6 +343,7 @@ export async function searchEntries(query: string): Promise<EntryWithFilm[]> {
           director: r.filmDirector,
           runtimeMin: r.filmRuntimeMin,
           posterUrl: r.filmPosterUrl,
+          releaseYear: r.filmReleaseYear,
         }
       : null,
     chips: [],

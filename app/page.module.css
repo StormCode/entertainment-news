@@ -9,11 +9,11 @@
   padding: 32px 40px;
 }
 
-/* Poster wall — 5 columns on desktop, scales down on smaller screens */
+/* Editorial 2-up grid — 2 columns on desktop, 1 on tablet/mobile */
 .entryGrid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem 3rem;
 }
 
 .emptyState {
@@ -22,13 +22,13 @@
   grid-column: 1 / -1;
 }
 
-/* Tablet: 4 columns */
+/* Tablet: single column — cards are too wide to fit two across */
 @media (max-width: 899px) {
-  .entryGrid { grid-template-columns: repeat(4, 1fr); }
+  .entryGrid { grid-template-columns: 1fr; }
 }
 
-/* Mobile: 2 columns */
+/* Mobile: single column, tighter gap */
 @media (max-width: 599px) {
   .main { padding: 16px 12px; }
-  .entryGrid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .entryGrid { gap: 1.5rem; }
 }

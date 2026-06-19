@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { entries, films, entryChips, directors } from "@/db/schema";
 import { eq, desc, and, isNotNull, inArray, sql } from "drizzle-orm";
 import { directorToSlug } from "@/lib/directors";
+import { toExcerpt } from "@/lib/excerpt";
 import type { EntryWithFilm } from "./entries";
 
 export type DirectorSummary = {
@@ -41,6 +42,7 @@ export async function getEntriesByDirectorName(directorName: string): Promise<En
       id: entries.id,
       slug: entries.slug,
       title: entries.title,
+      bodyMd: entries.body_md,
       backdropUrl: entries.backdrop_url,
       manualBackdropUrl: entries.manual_backdrop_url,
       publishedAt: entries.published_at,
@@ -48,6 +50,7 @@ export async function getEntriesByDirectorName(directorName: string): Promise<En
       filmTitleZh: films.title_zh,
       filmDirector: films.director,
       filmRuntime: films.runtime_min,
+      filmReleaseYear: films.release_year,
       filmPosterUrl: films.poster_url,
     })
     .from(entries)
@@ -68,12 +71,14 @@ export async function getEntriesByDirectorName(directorName: string): Promise<En
     title: r.title,
     backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
     publishedAt: r.publishedAt,
+    snippet: toExcerpt(r.bodyMd ?? ""),
     film: {
       title: r.filmTitle,
       titleZh: r.filmTitleZh,
       director: r.filmDirector,
       runtimeMin: r.filmRuntime,
       posterUrl: r.filmPosterUrl,
+      releaseYear: r.filmReleaseYear,
     },
     chips: allChips
       .filter((c) => c.entry_id === r.id)

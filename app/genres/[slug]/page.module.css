@@ -45,8 +45,8 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem 3rem;
 }
 
 .empty {
@@ -55,12 +55,12 @@
 }
 
 @media (max-width: 899px) {
-  .grid { grid-template-columns: repeat(4, 1fr); }
+  .grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 599px) {
   .main { padding: 24px 12px 48px; }
-  .grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .grid { gap: 1.5rem; }
   .heading { font-size: 22px; }
   .back { width: 22px; height: 22px; }
   .back svg { width: 14px; height: 14px; }
