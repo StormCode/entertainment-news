@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { PenLine, User } from "lucide-react";
+import { PenLine, User, Film } from "lucide-react";
 import { Masthead } from "@/components/layout/Masthead";
 import {
   getDirectors,
@@ -310,7 +310,9 @@ function PosterThumb({ posterUrl, title }: { posterUrl: string | null; title: st
         <Image src={posterUrl} alt={`《${title}》海報`} fill sizes="72px"
                className={styles.entryPosterImg} />
       ) : (
-        <div className={styles.entryPosterPlaceholder} aria-hidden="true" />
+        <div className={styles.entryPosterPlaceholder} aria-hidden="true">
+          <Film size={24} className={styles.entryPosterIcon} />
+        </div>
       )}
     </div>
   );
