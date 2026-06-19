@@ -123,15 +123,18 @@ export default async function EntryPage({ params }: PageProps) {
         <hr className={styles.rule} />
       </header>
 
-      <TableOfContents headings={headings} />
-
-      {/* Article body — same 800px column as identity (D2) */}
-      <article
-        id="main-content"
-        className={styles.body}
-        dangerouslySetInnerHTML={{ __html: bodyHtml }}
-        aria-label={`${filmTitle} 文章內文`}
-      />
+      <div className={styles.contentGrid}>
+        <aside className={styles.tocSidebar}>
+          <TableOfContents headings={headings} />
+        </aside>
+        {/* Article body — 800px column; grid handles centering on wide viewports */}
+        <article
+          id="main-content"
+          className={styles.body}
+          dangerouslySetInnerHTML={{ __html: bodyHtml }}
+          aria-label={`${filmTitle} 文章內文`}
+        />
+      </div>
 
       {relatedEntries.length > 0 && (
         <LazyReveal>

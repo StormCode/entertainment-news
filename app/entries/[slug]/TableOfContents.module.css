@@ -5,6 +5,19 @@
   border-top: 1px solid var(--line);
 }
 
+/* Toggle button — shared base */
+.tocToggle {
+  background: none;
+  border: none;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
 .label {
   font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
   font-size: 10px;
@@ -12,16 +25,33 @@
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  margin: 0 0 10px;
+  margin: 0;
 }
 
+/* Chevron indicator for mobile toggle */
+.chevron {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid var(--muted);
+  border-bottom: 1.5px solid var(--muted);
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* Mobile: list hidden until expanded */
 .list {
   list-style: none;
   margin: 0 0 16px;
   padding: 0;
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 2px;
+}
+
+.listOpen {
+  display: flex;
 }
 
 .h2,
@@ -59,10 +89,53 @@
   color: var(--gold);
 }
 
+/* Mobile/tablet: sticky at viewport top (masthead is not fixed; it scrolls away) */
+@media (max-width: 1099px) {
+  .toc {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--paper-2);
+    border-top: none;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+}
+
+/* Wide: sidebar mode */
+@media (min-width: 1100px) {
+  .toc {
+    max-width: none;
+    margin: 0;
+    padding: 16px 20px;
+    border-top: none;
+    background: var(--paper-2);
+    border-radius: 8px;
+    margin-top: 40px;
+  }
+
+  /* Non-interactive on desktop — sidebar always shows the list */
+  .tocToggle {
+    cursor: default;
+    pointer-events: none;
+    margin-bottom: 10px;
+  }
+
+  /* Hide the expand/collapse chevron on desktop */
+  .chevron {
+    display: none;
+  }
+
+  /* Always show the list on desktop regardless of mobileOpen state */
+  .list {
+    display: flex;
+  }
+}
+
 @media (max-width: 899px) {
-  .toc { padding: 16px 28px 0; }
+  .toc { padding: 16px 28px 12px; }
 }
 
 @media (max-width: 599px) {
-  .toc { padding: 14px 20px 0; }
+  .toc { padding: 14px 20px 12px; }
 }
