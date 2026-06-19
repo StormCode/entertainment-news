@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { User } from "lucide-react";
 import { Masthead } from "@/components/layout/Masthead";
 import { getDirectors } from "@/lib/queries/directors";
 import styles from "./page.module.css";
@@ -28,7 +29,7 @@ export default async function DirectorsPage() {
               <path d="M11 4L6 9L11 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </Link>
-          <h1 className={styles.heading}>導演</h1>
+          <Link href="/" className={styles.backLabel}>首頁</Link>
         </div>
 
         {directors.length === 0 ? (
@@ -49,16 +50,11 @@ export default async function DirectorsPage() {
                       />
                     ) : (
                       <div className={styles.posterPlaceholder} aria-hidden="true">
-                        <span className={styles.posterInitials}>
-                          {d.name.trim().split(/\s+/).length === 1
-                            ? d.name.slice(0, 2)
-                            : (d.name.trim().split(/\s+/)[0][0] + d.name.trim().split(/\s+/).slice(-1)[0][0]).toUpperCase()}
-                        </span>
+                        <User size={32} className={styles.posterIcon} />
                       </div>
                     )}
                   </div>
                   <p className={styles.name}>{d.name}</p>
-                  <p className={styles.count}>{d.entryCount} 篇</p>
                 </Link>
               </li>
             ))}

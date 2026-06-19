@@ -1,5 +1,5 @@
 .main {
-  max-width: 1440px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 40px 40px 64px;
 }
@@ -18,9 +18,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  margin-top: 2px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 1px solid var(--line-strong);
   color: var(--ink);
@@ -34,6 +33,19 @@
   background: rgba(212, 175, 55, 0.06);
 }
 
+.backLabel {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+
+.backLabel:hover {
+  color: var(--gold);
+}
+
 .heading {
   font-family: var(--font-serif-tc), "Noto Serif TC", serif;
   font-size: 28px;
@@ -45,7 +57,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 2rem;
   list-style: none;
   padding: 0;
@@ -89,15 +101,9 @@
   justify-content: center;
 }
 
-.posterInitials {
-  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
-  font-size: 28px;
-  font-weight: 900;
-  color: var(--gold);
-  opacity: 0.35;
-  letter-spacing: -0.02em;
-  user-select: none;
-  line-height: 1;
+.posterIcon {
+  color: var(--muted);
+  opacity: 0.4;
 }
 
 .name {
@@ -120,7 +126,7 @@
 }
 
 @media (max-width: 1199px) {
-  .grid { grid-template-columns: repeat(5, 1fr); }
+  .grid { grid-template-columns: repeat(4, 1fr); }
 }
 
 @media (max-width: 899px) {
@@ -131,6 +137,4 @@
   .main { padding: 24px 12px 48px; }
   .grid { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
   .heading { font-size: 22px; }
-  .back { width: 22px; height: 22px; }
-  .back svg { width: 14px; height: 14px; }
 }

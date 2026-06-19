@@ -141,6 +141,55 @@ Related entries (max-width 1100px, 2-col grid at bottom)
 
 **Mobile (`< 600px`):** body padding left/right 20px each; min font-size 17px.
 
+### Directors listing (`/directors`)
+
+```
+Back nav: circular 28×28px button (--line-strong border, gold on hover) + "首頁" backLabel span (12px muted sans)
+No page heading — the grid is self-explanatory
+Max-width: 1200px (matches detail page)
+Padding: 40px 40px 64px; mobile: 24px 12px 48px
+
+Grid:
+  Desktop (≥1200px):   5 columns
+  Wide (900–1199px):   4 columns
+  Tablet (600–899px):  4 columns
+  Mobile (<600px):     3 columns, gap 1rem
+
+Director card:
+  Poster: 2:3 aspect ratio, border-radius 2px, hover scale(1.03)
+  Placeholder (no TMDB photo): User icon (lucide-react, 32px, --muted 0.4 opacity) — NO initials
+  Name: 13px sans 600, hover → --gold
+  Count: REMOVED (not shown)
+```
+
+### Director detail (`/directors/[slug]`)
+
+```
+Back nav: same circular button pattern + "所有導演" backLabel span
+Max-width: 1200px; padding: 40px 40px 80px; mobile: 24px 16px 56px
+
+Layout: grid 220px sidebar + 1fr timeline, gap 64px
+  Tablet (≤899px): single column, sidebar becomes 2-col photo+info grid
+  Mobile (≤599px): sidebar 110px photo col
+
+Sidebar (position: sticky; top: 88px):
+  Photo: 2:3, border-top 2px gold; Placeholder: User icon (52px, --muted 0.4) — NO initials
+  Director name: serif 22px 900
+  Year range: sans 12px gold, letter-spacing 0.1em
+  Film count · review count: sans 12px muted, flex row with · divider
+  "本站收錄" list: 10px muted uppercase label; items = year (10px muted) + 《film》link (serif 12px) → hover gold
+
+StickyNav (fixed, slides in on scroll past page header):
+  Height 48px; background --paper; border-bottom --line; z-index 80
+  Inner: max-width 1200px, padding 0 40px (mobile: 0 16px)
+  Content: ← back link (13px muted) / divider / director name (serif 15px 700)
+
+Timeline (right panel):
+  Vertical gold-to-muted gradient line on left edge
+  Year groups: gold dot + year label (12px gold 700 uppercase, letter-spacing 0.16em)
+  FilmEntry: poster (72×108px, border-top 2px gold) + film name (20px serif 700, → TMDB) + optional review subtitle (14px muted, PenLine icon, → review, indent 12px)
+```
+
 ### Admin UI (`/admin/*`)
 
 Ghost/Notion style:

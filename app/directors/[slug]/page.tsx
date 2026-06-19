@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { PenLine } from "lucide-react";
+import { PenLine, User } from "lucide-react";
 import { Masthead } from "@/components/layout/Masthead";
 import {
   getDirectors,
@@ -16,11 +16,6 @@ import styles from "./page.module.css";
 
 export const revalidate = 14400;
 
-function directorInitials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].slice(0, 2);
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
 
 export async function generateStaticParams() {
   try {
@@ -170,7 +165,7 @@ export default async function DirectorPage({ params }: { params: Promise<{ slug:
               <path d="M11 4L6 9L11 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </Link>
-          <span className={styles.backLabel}>所有導演</span>
+          <Link href="/directors" className={styles.backLabel}>所有導演</Link>
         </div>
         <StickyNav directorName={director!.name} />
 
@@ -188,9 +183,7 @@ export default async function DirectorPage({ params }: { params: Promise<{ slug:
                 />
               ) : (
                 <div className={styles.photoPlaceholder} aria-hidden="true">
-                  <span className={styles.photoInitials}>
-                    {directorInitials(director!.name)}
-                  </span>
+                  <User size={52} className={styles.photoIcon} />
                 </div>
               )}
             </div>
