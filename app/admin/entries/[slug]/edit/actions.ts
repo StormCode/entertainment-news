@@ -61,6 +61,34 @@ export async function updateEntry(input: UpdateEntryInput) {
   return { ok: true };
 }
 
+export async function updateFilmPoster(
+  filmId: number,
+  tmdbPosterPath: string
+): Promise<{ posterUrl: string } | { error: string }> {
+  const [film] = await db
+    .select({ tmdb_id: films.tmdb_id })
+    .from(films)
+    .where(eq(films.id, filmId))
+    .limit(1);
+
+  if (!film?.tmdb_id) return { error: "找不到影片" };
+
+  const { posterUrl } = await uploadFilmImages({
+    tmdbId: film.tmdb_id,
+    backdropTmdbPath: null,
+    posterTmdbPath: tmdbPosterPath,
+  });
+
+  if (!posterUrl) return { error: "R2 上傳失敗，請稍後再試" };
+
+  await db
+    .update(films)
+    .set({ poster_url: posterUrl })
+    .where(eq(films.id, filmId));
+
+  return { posterUrl };
+}
+
 export async function retryR2Upload(filmId: number) {
   const [film] = await db
     .select({ tmdb_id: films.tmdb_id, backdrop_url: films.backdrop_url, poster_url: films.poster_url })

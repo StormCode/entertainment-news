@@ -44,6 +44,7 @@ export default async function EditEntryPage({ params }: Props) {
       }}
       film={film ? {
         id: film.id,
+        tmdb_id: film.tmdb_id,
         title: film.title,
         title_zh: film.title_zh,
         director: film.director,

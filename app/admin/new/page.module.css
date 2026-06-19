@@ -197,6 +197,28 @@
   border-radius: 2px;
 }
 
+.btnChangePoster {
+  width: 100%;
+  padding: 5px 0;
+  background: none;
+  border: 1px solid var(--line-strong, #3a3632);
+  border-radius: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btnChangePoster:hover:not(:disabled) {
+  border-color: var(--gold, #d4af37);
+  color: var(--gold, #d4af37);
+}
+
+.btnChangePoster:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .filmTitle {
   font-size: 14px;
   font-weight: 700;

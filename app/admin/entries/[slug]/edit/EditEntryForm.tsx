@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { updateEntry, retryR2Upload } from "./actions";
+import { updateEntry, retryR2Upload, updateFilmPoster } from "./actions";
 import { GENRES, type GenreLabel } from "@/lib/constants/genres";
+import { PosterPickerModal } from "@/components/admin/PosterPickerModal";
 import styles from "./edit.module.css";
 
 interface EntryChip {
@@ -28,6 +29,7 @@ interface EntryProps {
 
 interface FilmProps {
   id: number;
+  tmdb_id: number | null;
   title: string;
   title_zh: string | null;
   director: string | null;
@@ -56,6 +58,9 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
   const [r2Pending, startR2] = useTransition();
+  const [posterUrl, setPosterUrl] = useState(film?.poster_url ?? null);
+  const [posterPickerOpen, setPosterPickerOpen] = useState(false);
+  const [posterUploading, setPosterUploading] = useState(false);
 
   function toggleGenre(label: GenreLabel) {
     setSelectedGenres((prev) =>
@@ -64,8 +69,26 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
   }
 
   const heroUrl = entry.backdrop_url ?? film?.backdrop_url;
-  const posterUrl = film?.poster_url;
   const r2Missing = !heroUrl || heroUrl.startsWith("/");
+
+  async function handlePosterSelect(posterPath: string) {
+    if (!film) return;
+    setPosterUploading(true);
+    setPosterPickerOpen(false);
+    try {
+      const result = await updateFilmPoster(film.id, posterPath);
+      if ("error" in result) {
+        setMessage(`海報更換失敗：${result.error}`);
+      } else {
+        setPosterUrl(result.posterUrl);
+        setMessage("海報已更換");
+      }
+    } catch {
+      setMessage("海報更換失敗，請再試");
+    } finally {
+      setPosterUploading(false);
+    }
+  }
 
   function handleSave() {
     startTransition(async () => {
@@ -154,6 +177,16 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
               <img src={posterUrl} alt={film.title} className={styles.poster} />
             ) : (
               <div className={styles.posterMissing}>圖片待補</div>
+            )}
+            {film.tmdb_id && (
+              <button
+                type="button"
+                className={styles.btnChangePoster}
+                onClick={() => setPosterPickerOpen(true)}
+                disabled={posterUploading || isPending}
+              >
+                {posterUploading ? "上傳中…" : "重新選擇"}
+              </button>
             )}
             <p className={styles.filmTitle}>{film.title}</p>
             {film.title_zh && <p className={styles.hint}>{film.title_zh}</p>}
@@ -322,6 +355,14 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
         </div>
       </aside>
 
+      {posterPickerOpen && film?.tmdb_id && (
+        <PosterPickerModal
+          tmdbId={film.tmdb_id}
+          onSelect={handlePosterSelect}
+          onClose={() => setPosterPickerOpen(false)}
+          disabled={posterUploading}
+        />
+      )}
     </div>
   );
 }

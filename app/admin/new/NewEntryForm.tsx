@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { Toast } from "@/components/ui/Toast";
 import { fetchFilmData, saveEntry } from "./actions";
 import { GENRES, type GenreLabel } from "@/lib/constants/genres";
+import { PosterPickerModal } from "@/components/admin/PosterPickerModal";
 import styles from "./page.module.css";
 
 interface FilmPreview {
+  tmdbId: number;
   title: string;
   director: string | null;
   runtimeMin: number | null;
@@ -27,6 +29,8 @@ export function NewEntryForm() {
   const [selectedGenres, setSelectedGenres] = useState<GenreLabel[]>([]);
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [selectedPosterPath, setSelectedPosterPath] = useState<string | null>(null);
+  const [posterPickerOpen, setPosterPickerOpen] = useState(false);
 
   function toggleGenre(label: GenreLabel) {
     setSelectedGenres((prev) =>
@@ -43,12 +47,13 @@ export function NewEntryForm() {
     } else {
       setFilmError("");
       setFilm(result.film as FilmPreview);
+      setSelectedPosterPath(null);
     }
   }
 
   function handleSaveDraft() {
     startTransition(async () => {
-      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, manualBackdropUrl, imageCredit, genreLabels: selectedGenres, publish: false });
+      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, manualBackdropUrl, imageCredit, genreLabels: selectedGenres, publish: false, selectedPosterPath: selectedPosterPath ?? undefined });
       if ("slug" in result) {
         router.push(`/admin/entries/${result.slug}/edit`);
       }
@@ -57,7 +62,7 @@ export function NewEntryForm() {
 
   function handlePublish() {
     startTransition(async () => {
-      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, manualBackdropUrl, imageCredit, genreLabels: selectedGenres, publish: true });
+      const result = await saveEntry({ tmdbUrl, entryTitle, bodyMd, manualBackdropUrl, imageCredit, genreLabels: selectedGenres, publish: true, selectedPosterPath: selectedPosterPath ?? undefined });
       if ("slug" in result) {
         router.push(`/entries/${result.slug}`);
       }
@@ -83,10 +88,24 @@ export function NewEntryForm() {
           {filmError && <p className={styles.error}>{filmError}</p>}
           {film && (
             <div className={styles.filmPreview}>
-              {film.posterPath && (
+              {(selectedPosterPath || film.posterPath) && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={film.posterPath} alt={film.title} className={styles.poster} />
+                <img
+                  src={selectedPosterPath
+                    ? `https://image.tmdb.org/t/p/w342${selectedPosterPath}`
+                    : film.posterPath!}
+                  alt={film.title}
+                  className={styles.poster}
+                />
               )}
+              <button
+                type="button"
+                className={styles.btnChangePoster}
+                onClick={() => setPosterPickerOpen(true)}
+                disabled={isPending}
+              >
+                重新選擇
+              </button>
               <p className={styles.filmTitle}>{film.title}</p>
               {film.director && <p className={styles.hint}>{film.director}</p>}
               {film.runtimeMin && <p className={styles.hint}>{film.runtimeMin} min</p>}
@@ -192,6 +211,17 @@ export function NewEntryForm() {
         <Toast
           filmTitle={film?.title ?? entryTitle}
           redirectTo={`/entries/${publishedSlug}`}
+        />
+      )}
+
+      {posterPickerOpen && film?.tmdbId && (
+        <PosterPickerModal
+          tmdbId={film.tmdbId}
+          onSelect={(path) => {
+            setSelectedPosterPath(path);
+            setPosterPickerOpen(false);
+          }}
+          onClose={() => setPosterPickerOpen(false)}
         />
       )}
     </div>

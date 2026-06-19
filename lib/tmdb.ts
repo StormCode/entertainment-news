@@ -46,12 +46,45 @@ export interface TmdbFilm {
   rawJson: string;
 }
 
+export type TmdbPoster = {
+  file_path: string;
+  vote_average: number;
+  width: number;
+  height: number;
+  iso_639_1: string | null;
+};
+
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p";
 
 function tmdbId(url: string): number | null {
   const m = url.match(/\/movie\/(\d+)/);
   return m ? parseInt(m[1], 10) : null;
+}
+
+export async function fetchTmdbPosters(tmdbId: number): Promise<TmdbPoster[]> {
+  const apiKey = process.env.TMDB_API_KEY;
+  if (!apiKey) return [];
+  try {
+    const res = await fetch(
+      `${TMDB_BASE}/movie/${tmdbId}/images?api_key=${apiKey}`,
+      { next: { revalidate: 86400 } }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    const posters: TmdbPoster[] = (data.posters ?? []).map((p: TmdbPoster) => ({
+      file_path: p.file_path,
+      vote_average: p.vote_average,
+      width: p.width,
+      height: p.height,
+      iso_639_1: p.iso_639_1 ?? null,
+    }));
+    return posters
+      .sort((a, b) => b.vote_average - a.vote_average || b.width - a.width)
+      .slice(0, 30);
+  } catch {
+    return [];
+  }
 }
 
 export async function fetchTmdbFilm(urlOrId: string): Promise<TmdbFilm | null> {

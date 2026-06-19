@@ -31,10 +31,11 @@ interface SaveEntryInput {
   imageCredit?: string;
   genreLabels?: string[];
   publish: boolean;
+  selectedPosterPath?: string;
 }
 
 export async function saveEntry(input: SaveEntryInput) {
-  const { tmdbUrl, titleZh, entryTitle, bodyMd, manualBackdropUrl, imageCredit, genreLabels, publish } = input;
+  const { tmdbUrl, titleZh, entryTitle, bodyMd, manualBackdropUrl, imageCredit, genreLabels, publish, selectedPosterPath } = input;
 
   let filmId: number | null = null;
 
@@ -61,7 +62,7 @@ export async function saveEntry(input: SaveEntryInput) {
             runtime_min: tmdbFilm.runtimeMin,
             release_year: tmdbFilm.releaseYear,
             backdrop_url: tmdbFilm.backdropPath,  // raw TMDB URL; R2 upload in background
-            poster_url: tmdbFilm.posterPath,
+            poster_url: selectedPosterPath ?? tmdbFilm.posterPath,
             tmdb_data: tmdbFilm.rawJson,
           })
           .returning({ id: films.id });
@@ -71,7 +72,7 @@ export async function saveEntry(input: SaveEntryInput) {
         uploadFilmImages({
           tmdbId: tmdbFilm.tmdbId,
           backdropTmdbPath: tmdbFilm.backdropPath,
-          posterTmdbPath: tmdbFilm.posterPath,
+          posterTmdbPath: selectedPosterPath ?? tmdbFilm.posterPath,
         })
           .then(async ({ heroUrl, posterUrl }) => {
             if (heroUrl || posterUrl) {
