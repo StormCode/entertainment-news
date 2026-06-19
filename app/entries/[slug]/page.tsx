@@ -4,8 +4,12 @@ import { Masthead } from "@/components/layout/Masthead";
 import { Chip } from "@/components/ui/Chip";
 import { getEntryBySlug, getEntriesByDirector } from "@/lib/queries/entries";
 import { EntryCard } from "@/components/entries/EntryCard";
-import { renderMarkdown } from "@/lib/markdown/render";
+import { renderMarkdown, wordCount } from "@/lib/markdown/render";
 import { LazyReveal } from "@/components/ui/LazyReveal";
+import { ReadingProgress } from "./ReadingProgress";
+import { TableOfContents } from "./TableOfContents";
+import { ArticleControls } from "./ArticleControls";
+import { BackToTop } from "./BackToTop";
 import styles from "./page.module.css";
 
 export const revalidate = 14400;
@@ -57,11 +61,14 @@ export default async function EntryPage({ params }: PageProps) {
     ? await getEntriesByDirector(film.director, entry.id)
     : [];
   const imageCredit = entry.image_credit ?? null;
-  const bodyHtml = await renderMarkdown(entry.body_md);
+
+  const { html: bodyHtml, headings } = await renderMarkdown(entry.body_md);
+  const readingMin = wordCount(entry.body_md);
 
   return (
     <>
       <Masthead />
+      <ReadingProgress />
 
       {/* Full-bleed backdrop header */}
       <header className={styles.articleHeader}>
@@ -101,6 +108,8 @@ export default async function EntryPage({ params }: PageProps) {
                 </time>
               </>
             )}
+            <span> · </span>
+            <span>約 {readingMin} 分鐘閱讀</span>
           </p>
           {chips.length > 0 && (
             <div className={styles.chips}>
@@ -113,6 +122,8 @@ export default async function EntryPage({ params }: PageProps) {
 
         <hr className={styles.rule} />
       </header>
+
+      <TableOfContents headings={headings} />
 
       {/* Article body — same 800px column as identity (D2) */}
       <article
@@ -136,6 +147,9 @@ export default async function EntryPage({ params }: PageProps) {
           </section>
         </LazyReveal>
       )}
+
+      <ArticleControls />
+      <BackToTop />
     </>
   );
 }

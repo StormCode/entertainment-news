@@ -1,0 +1,60 @@
+.toc {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px 40px 0;
+  border-top: 1px solid var(--line);
+}
+
+.label {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin: 0 0 10px;
+}
+
+.list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.h2,
+.h3 {
+  line-height: 1.4;
+}
+
+.h3 {
+  padding-left: 14px;
+}
+
+.link {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+  display: block;
+  padding: 2px 0;
+}
+
+.link:hover {
+  color: var(--ink);
+}
+
+.link.active {
+  color: var(--gold);
+}
+
+@media (max-width: 899px) {
+  .toc { padding: 16px 28px 0; }
+}
+
+@media (max-width: 599px) {
+  .toc { padding: 14px 20px 0; }
+}

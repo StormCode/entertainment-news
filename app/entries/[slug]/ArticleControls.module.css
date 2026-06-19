@@ -1,0 +1,44 @@
+.controls {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 100;
+}
+
+.btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  line-height: 1;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(212, 175, 55, 0.06);
+}
+
+.btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+@media (max-width: 599px) {
+  .controls {
+    bottom: 20px;
+    right: 16px;
+  }
+}

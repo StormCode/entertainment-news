@@ -1,0 +1,30 @@
+.btn {
+  position: fixed;
+  bottom: 118px;
+  right: 32px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(212, 175, 55, 0.06);
+}
+
+@media (max-width: 599px) {
+  .btn {
+    bottom: 106px;
+    right: 16px;
+  }
+}

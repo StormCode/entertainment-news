@@ -4,6 +4,27 @@ Deferred from plan reviews. Each item has enough context to be picked up cold.
 
 ---
 
+## Engineering Review TODOs (from /plan-eng-review 2026-06-19)
+
+### TODO-E4: H2/H3 hover 複製錨點連結
+**What:** 游標懸停於文章 H2/H3 標題時，顯示鎖鏈圖示，點擊將 `#anchor-id` URL 複製到剪貼簿。
+**Why:** 方便讀者分享文章特定段落。讀者評論「聊到第三段」時有直接連結可引用。
+**Pros:** 使用體驗提升；anchor id 已由 rehype-slug 產生（本次 PR 後）。
+**Cons:** 需要 Clipboard API（需 HTTPS，已滿足）；hover UI 設計需要注意不遮蓋標題本身。
+**Context:** 本次文章閱讀 UX 增強 PR 完成後即可實作。heading id 由 rehype-slug 產生，格式穩定。CSS `:hover` 顯示 `<Copy icon>` + click handler 即可。
+**Depends on:** 文章閱讀 UX 增強 PR 已合入（rehype-slug 就位）。
+**Target:** v0.1
+
+### TODO-E5: 測試基礎設施（vitest）
+**What:** 引入 vitest，為 `lib/markdown/render.ts` 中的 `wordCount()` 寫第一個 unit test suite。
+**Why:** wordCount() 是純函數，有明確輸入/輸出規格（CJK 字符各計 1、英文以單詞計、clamp min 1 分鐘）；eng review 發現 regex 有 bug，正是因為沒有測試。未來 render.ts 改動有回歸保護。
+**Pros:** 為測試文化建立基礎；wordCount() 是理想的起點（零副作用、邊界清晰）。
+**Cons:** 需設定 vitest config；Next.js app router 的 server component 測試較複雜，此 TODO 只針對純函數。
+**Context:** `lib/markdown/render.ts` 的 `wordCount()` 函數。測試案例：純中文句子（各字計 1）、純英文（單詞計）、混合（兩者加總）、空字串（min 1 分鐘）。
+**Target:** v0.1
+
+---
+
 ## Engineering Review TODOs (from /plan-eng-review 2026-06-13)
 
 ### ~~TODO-E1: /admin/health pipeline status page~~ ✓ DONE (2026-06-18)
