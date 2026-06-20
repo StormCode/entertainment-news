@@ -7,19 +7,28 @@ import { GenreGrid } from "@/components/genres/GenreGrid";
 import { HeroCarousel } from "@/components/hero/HeroCarousel";
 import { HeroSkeleton, EntryCardSkeleton } from "@/components/skeleton";
 import { getPublishedEntries, getHeroEntries } from "@/lib/queries/entries";
+import { Pagination } from "@/components/ui/Pagination";
 import { LazyReveal } from "@/components/ui/LazyReveal";
 import styles from "./page.module.css";
 
+const PAGE_SIZE = 8;
 
-async function EntryGrid() {
-  let entries: Awaited<ReturnType<typeof getPublishedEntries>> = [];
+interface PageProps {
+  searchParams: Promise<{ page?: string }>;
+}
+
+async function EntryGrid({ page }: { page: number }) {
+  let items: Awaited<ReturnType<typeof getPublishedEntries>>["items"] = [];
+  let hasNext = false;
   try {
-    entries = await getPublishedEntries(40);
+    const result = await getPublishedEntries(PAGE_SIZE, (page - 1) * PAGE_SIZE);
+    items = result.items;
+    hasNext = result.hasNext;
   } catch {
-    // DB unavailable at build time or cold start — show empty state
+    // DB unavailable at build time or cold start
   }
 
-  if (entries.length === 0) {
+  if (items.length === 0) {
     return (
       <div className={styles.entryGrid}>
         <p className={styles.emptyState}>暫無文章。</p>
@@ -28,11 +37,14 @@ async function EntryGrid() {
   }
 
   return (
-    <div className={styles.entryGrid}>
-      {entries.map((entry) => (
-        <EntryCard key={entry.id} entry={entry} />
-      ))}
-    </div>
+    <>
+      <div className={styles.entryGrid}>
+        {items.map((entry) => (
+          <EntryCard key={entry.id} entry={entry} />
+        ))}
+      </div>
+      <Pagination currentPage={page} hasNext={hasNext} basePath="/" />
+    </>
   );
 }
 
@@ -46,7 +58,10 @@ async function Hero() {
   return <HeroCarousel entries={heroEntries} />;
 }
 
-export default function HomePage() {
+export default async function HomePage({ searchParams }: PageProps) {
+  const { page: pageParam } = await searchParams;
+  const currentPage = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+
   return (
     <>
       <Masthead />
@@ -64,13 +79,13 @@ export default function HomePage() {
           <Suspense
             fallback={
               <div className={styles.entryGrid}>
-                {[...Array(16)].map((_, i) => (
+                {[...Array(8)].map((_, i) => (
                   <EntryCardSkeleton key={i} />
                 ))}
               </div>
             }
           >
-            <EntryGrid />
+            <EntryGrid page={currentPage} />
           </Suspense>
         </LazyReveal>
       </main>

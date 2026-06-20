@@ -133,6 +133,43 @@ export async function getDirectorTimeline(directorName: string): Promise<Directo
   }));
 }
 
+export async function getDirectorsPaged(
+  limit = 20,
+  offset = 0,
+): Promise<{ items: DirectorSummary[]; hasNext: boolean }> {
+  const rows = await db
+    .select({
+      director: films.director,
+      entryCount: sql<number>`cast(count(${entries.id}) as int)`,
+      photoUrl: directors.photo_url,
+      tmdbPersonId: directors.tmdb_person_id,
+    })
+    .from(entries)
+    .innerJoin(films, eq(entries.primary_film_id, films.id))
+    .leftJoin(directors, eq(directors.name, films.director))
+    .where(and(eq(entries.is_published, true), isNotNull(films.director)))
+    .groupBy(films.director, directors.photo_url, directors.tmdb_person_id)
+    .orderBy(sql`count(${entries.id}) desc`, films.director)
+    .limit(limit + 1)
+    .offset(offset);
+
+  const hasNext = rows.length > limit;
+  const sliced = hasNext ? rows.slice(0, limit) : rows;
+
+  return {
+    items: sliced
+      .filter((r) => r.director !== null)
+      .map((r) => ({
+        name: r.director!,
+        slug: directorToSlug(r.director!),
+        entryCount: r.entryCount,
+        photoUrl: r.photoUrl,
+        tmdbPersonId: r.tmdbPersonId,
+      })),
+    hasNext,
+  };
+}
+
 export async function getDirectorSummaryBySlug(slug: string): Promise<DirectorSummary | null> {
   const all = await getDirectors();
   return all.find((d) => d.slug === slug) ?? null;

@@ -21,7 +21,10 @@ export type EntryWithFilm = {
   chips: Array<{ label: string; kind: string; isLive: string | null }>;
 };
 
-export async function getPublishedEntries(limit = 20): Promise<EntryWithFilm[]> {
+export async function getPublishedEntries(
+  limit = 20,
+  offset = 0,
+): Promise<{ items: EntryWithFilm[]; hasNext: boolean }> {
   const rows = await db
     .select({
       id: entries.id,
@@ -42,9 +45,13 @@ export async function getPublishedEntries(limit = 20): Promise<EntryWithFilm[]> 
     .leftJoin(films, eq(entries.primary_film_id, films.id))
     .where(eq(entries.is_published, true))
     .orderBy(desc(entries.published_at))
-    .limit(limit);
+    .limit(limit + 1)
+    .offset(offset);
 
-  const entryIds = rows.map((r) => r.id);
+  const hasNext = rows.length > limit;
+  const sliced = hasNext ? rows.slice(0, limit) : rows;
+
+  const entryIds = sliced.map((r) => r.id);
   const allChips =
     entryIds.length > 0
       ? await db
@@ -53,27 +60,30 @@ export async function getPublishedEntries(limit = 20): Promise<EntryWithFilm[]> 
           .where(inArray(entryChips.entry_id, entryIds))
       : [];
 
-  return rows.map((r) => ({
-    id: r.id,
-    slug: r.slug,
-    title: r.title,
-    backdropUrl: r.backdropUrl ?? r.manualBackdropUrl,
-    publishedAt: r.publishedAt,
-    snippet: toExcerpt(r.bodyMd ?? ""),
-    film: r.filmTitle
-      ? {
-          title: r.filmTitle,
-          titleZh: r.filmTitleZh,
-          director: r.filmDirector,
-          runtimeMin: r.filmRuntime,
-          posterUrl: r.filmPosterUrl,
-          releaseYear: r.filmReleaseYear,
-        }
-      : null,
-    chips: allChips
-      .filter((c) => c.entry_id === r.id)
-      .map((c) => ({ label: c.label, kind: c.kind, isLive: c.is_live })),
-  }));
+  return {
+    items: sliced.map((r) => ({
+      id: r.id,
+      slug: r.slug,
+      title: r.title,
+      backdropUrl: r.backdropUrl ?? r.manualBackdropUrl,
+      publishedAt: r.publishedAt,
+      snippet: toExcerpt(r.bodyMd ?? ""),
+      film: r.filmTitle
+        ? {
+            title: r.filmTitle,
+            titleZh: r.filmTitleZh,
+            director: r.filmDirector,
+            runtimeMin: r.filmRuntime,
+            posterUrl: r.filmPosterUrl,
+            releaseYear: r.filmReleaseYear,
+          }
+        : null,
+      chips: allChips
+        .filter((c) => c.entry_id === r.id)
+        .map((c) => ({ label: c.label, kind: c.kind, isLive: c.is_live })),
+    })),
+    hasNext,
+  };
 }
 
 export async function getHeroEntry(): Promise<EntryWithFilm | null> {
@@ -183,13 +193,17 @@ export async function getHeroEntries(): Promise<EntryWithFilm[]> {
   }));
 }
 
-export async function getEntriesByGenre(genreLabel: string): Promise<EntryWithFilm[]> {
+export async function getEntriesByGenre(
+  genreLabel: string,
+  limit = 8,
+  offset = 0,
+): Promise<{ items: EntryWithFilm[]; hasNext: boolean }> {
   const matching = await db
     .select({ entry_id: entryChips.entry_id })
     .from(entryChips)
     .where(and(eq(entryChips.kind, "genre"), eq(entryChips.label, genreLabel)));
 
-  if (matching.length === 0) return [];
+  if (matching.length === 0) return { items: [], hasNext: false };
 
   const ids = matching.map((r) => r.entry_id);
 
@@ -212,36 +226,44 @@ export async function getEntriesByGenre(genreLabel: string): Promise<EntryWithFi
     .from(entries)
     .leftJoin(films, eq(entries.primary_film_id, films.id))
     .where(and(eq(entries.is_published, true), inArray(entries.id, ids)))
-    .orderBy(desc(entries.published_at));
+    .orderBy(desc(entries.published_at))
+    .limit(limit + 1)
+    .offset(offset);
 
-  if (rows.length === 0) return [];
+  if (rows.length === 0) return { items: [], hasNext: false };
+
+  const hasNext = rows.length > limit;
+  const sliced = hasNext ? rows.slice(0, limit) : rows;
 
   const allChips = await db
     .select()
     .from(entryChips)
-    .where(inArray(entryChips.entry_id, rows.map((r) => r.id)));
+    .where(inArray(entryChips.entry_id, sliced.map((r) => r.id)));
 
-  return rows.map((r) => ({
-    id: r.id,
-    slug: r.slug,
-    title: r.title,
-    backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
-    publishedAt: r.publishedAt,
-    snippet: toExcerpt(r.bodyMd ?? ""),
-    film: r.filmTitle
-      ? {
-          title: r.filmTitle,
-          titleZh: r.filmTitleZh,
-          director: r.filmDirector,
-          runtimeMin: r.filmRuntime,
-          posterUrl: r.filmPosterUrl,
-          releaseYear: r.filmReleaseYear,
-        }
-      : null,
-    chips: allChips
-      .filter((c) => c.entry_id === r.id)
-      .map((c) => ({ label: c.label, kind: c.kind, isLive: c.is_live })),
-  }));
+  return {
+    items: sliced.map((r) => ({
+      id: r.id,
+      slug: r.slug,
+      title: r.title,
+      backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
+      publishedAt: r.publishedAt,
+      snippet: toExcerpt(r.bodyMd ?? ""),
+      film: r.filmTitle
+        ? {
+            title: r.filmTitle,
+            titleZh: r.filmTitleZh,
+            director: r.filmDirector,
+            runtimeMin: r.filmRuntime,
+            posterUrl: r.filmPosterUrl,
+            releaseYear: r.filmReleaseYear,
+          }
+        : null,
+      chips: allChips
+        .filter((c) => c.entry_id === r.id)
+        .map((c) => ({ label: c.label, kind: c.kind, isLive: c.is_live })),
+    })),
+    hasNext,
+  };
 }
 
 export async function getEntriesByDirector(director: string, excludeEntryId: number): Promise<EntryWithFilm[]> {
