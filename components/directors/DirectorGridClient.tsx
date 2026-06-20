@@ -19,12 +19,15 @@ export function DirectorGridClient({ initialData, initialPage }: Props) {
   const [data, setData] = useState(initialData);
   const [isPending, startTransition] = useTransition();
   const prevPage = useRef(initialPage);
+  const gridRef = useRef<HTMLUListElement>(null);
+  const shouldScrollRef = useRef(false);
 
   const currentPage = Math.max(1, parseInt(searchParams.get("page") ?? "1") || 1);
 
   useEffect(() => {
     if (currentPage === prevPage.current) return;
     prevPage.current = currentPage;
+    shouldScrollRef.current = true;
     startTransition(async () => {
       const res = await fetch(`/api/directors?page=${currentPage}`);
       const json = await res.json();
@@ -32,11 +35,18 @@ export function DirectorGridClient({ initialData, initialPage }: Props) {
     });
   }, [currentPage]);
 
+  useEffect(() => {
+    if (!shouldScrollRef.current) return;
+    shouldScrollRef.current = false;
+    gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [data]);
+
   if (data.items.length === 0 && !isPending) return null;
 
   return (
     <>
       <ul
+        ref={gridRef}
         className={styles.grid}
         role="list"
         style={isPending ? { opacity: 0.5, pointerEvents: "none" } : undefined}

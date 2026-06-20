@@ -24,18 +24,27 @@ export function GenreGridClient({ initialData, initialPage, slug }: Props) {
   const [data, setData] = useState(initialData);
   const [isPending, startTransition] = useTransition();
   const prevPage = useRef(initialPage);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const shouldScrollRef = useRef(false);
 
   const currentPage = Math.max(1, parseInt(searchParams.get("page") ?? "1") || 1);
 
   useEffect(() => {
     if (currentPage === prevPage.current) return;
     prevPage.current = currentPage;
+    shouldScrollRef.current = true;
     startTransition(async () => {
       const res = await fetch(`/api/genres/${slug}?page=${currentPage}`);
       const json = await res.json();
       setData(json);
     });
   }, [currentPage, slug]);
+
+  useEffect(() => {
+    if (!shouldScrollRef.current) return;
+    shouldScrollRef.current = false;
+    gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [data]);
 
   if (data.items.length === 0 && !isPending) return null;
 
@@ -44,6 +53,7 @@ export function GenreGridClient({ initialData, initialPage, slug }: Props) {
   return (
     <>
       <div
+        ref={gridRef}
         className={styles.grid}
         style={isPending ? { opacity: 0.5, pointerEvents: "none" } : undefined}
       >

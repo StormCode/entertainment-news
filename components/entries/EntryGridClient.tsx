@@ -31,12 +31,15 @@ export function EntryGridClient({
   const [data, setData] = useState(initialData);
   const [isPending, startTransition] = useTransition();
   const prevPage = useRef(initialPage);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const shouldScrollRef = useRef(false);
 
   const currentPage = Math.max(1, parseInt(searchParams.get("page") ?? "1") || 1);
 
   useEffect(() => {
     if (currentPage === prevPage.current) return;
     prevPage.current = currentPage;
+    shouldScrollRef.current = true;
     startTransition(async () => {
       const res = await fetch(`${apiPath}?page=${currentPage}`);
       const json = await res.json();
@@ -44,13 +47,19 @@ export function EntryGridClient({
     });
   }, [currentPage, apiPath]);
 
+  useEffect(() => {
+    if (!shouldScrollRef.current) return;
+    shouldScrollRef.current = false;
+    gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [data]);
+
   const items = data.items.map(parseEntry);
 
   if (items.length === 0 && !isPending) return null;
 
   return (
     <>
-      <div className={gridClassName} style={isPending ? { opacity: 0.5, pointerEvents: "none" } : undefined}>
+      <div ref={gridRef} className={gridClassName} style={isPending ? { opacity: 0.5, pointerEvents: "none" } : undefined}>
         {items.map((entry) => (
           <EntryCard key={entry.id} entry={entry} />
         ))}

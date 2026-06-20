@@ -58,7 +58,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-Hant" className={`${serifTC.variable} ${sansTC.variable}`} suppressHydrationWarning>
-      <body>
+      <body suppressHydrationWarning>
         {children}
         <Footer />
       </body>
