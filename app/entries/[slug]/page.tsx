@@ -104,6 +104,7 @@ export default async function EntryPage({ params }: PageProps) {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
+                    timeZone: "Asia/Taipei",
                   })}
                 </time>
               </>

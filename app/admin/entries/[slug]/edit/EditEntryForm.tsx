@@ -287,6 +287,7 @@ export function EditEntryForm({ entry, film, chips: initialChips }: Props) {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
+                  timeZone: "Asia/Taipei",
                 })}
               </span>
             </p>

@@ -81,6 +81,7 @@ export default async function AdminEntriesPage() {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
+                  timeZone: "Asia/Taipei",
                 })}
               </p>
             )}
