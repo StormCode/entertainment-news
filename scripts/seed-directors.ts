@@ -76,7 +76,9 @@ async function uploadPhoto(tmdbPersonId: number, profilePath: string): Promise<s
 }
 
 async function main() {
-  // Get distinct director names from films with published entries
+  const skipExisting = !process.argv.includes("--force");
+
+  // Get distinct director names from films
   const rows = await db
     .selectDistinct({ name: films.director })
     .from(films)
@@ -86,7 +88,19 @@ async function main() {
   const names = rows.map((r) => r.name!).filter(Boolean);
   console.log(`Found ${names.length} directors:`, names);
 
+  // Load existing director rows to skip those already fully resolved
+  const existing = await db.select().from(directors);
+  const existingMap = new Map(existing.map((d) => [d.name, d]));
+
   for (const name of names) {
+    if (skipExisting) {
+      const d = existingMap.get(name);
+      if (d?.photo_url && d?.tmdb_person_id) {
+        console.log(`\nSkipping (already resolved): ${name}`);
+        continue;
+      }
+    }
+
     console.log(`\nProcessing: ${name}`);
 
     // Upsert director row

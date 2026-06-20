@@ -1,0 +1,54 @@
+name: Sync Director Photos
+
+on:
+  schedule:
+    # 18:30 UTC = 02:30 Taiwan Standard Time (after nightly backup at 02:00)
+    - cron: "30 18 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Re-fetch all directors, even those already resolved (--force)"
+        type: boolean
+        default: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Sync director photos from TMDB → R2
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_DIRECT }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+        run: |
+          ARGS=""
+          if [[ "${{ github.event.inputs.force }}" == "true" ]]; then
+            ARGS="--force"
+          fi
+          bun scripts/seed-directors.ts $ARGS
+
+      - name: Report pipeline health
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          [[ "$STATUS" == "success" ]] || STATUS="failure"
+          curl -sf -X POST "${{ secrets.NEXT_PUBLIC_SITE_URL }}/api/pipeline-health" \
+            -H "Authorization: Bearer ${{ secrets.PIPELINE_HEALTH_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"name\":\"sync-director-photos\",\"status\":\"${STATUS}\"}" \
+          || echo "Warning: health report POST failed (non-fatal)"
