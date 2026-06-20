@@ -193,6 +193,82 @@ export async function getHeroEntries(): Promise<EntryWithFilm[]> {
   }));
 }
 
+type ChipKind = "streaming" | "festival" | "collaborator" | "genre";
+
+export async function getEntriesByChip(
+  kind: ChipKind,
+  label: string,
+  limit = 8,
+  offset = 0,
+): Promise<{ items: EntryWithFilm[]; hasNext: boolean }> {
+  const matching = await db
+    .select({ entry_id: entryChips.entry_id })
+    .from(entryChips)
+    .where(and(eq(entryChips.kind, kind), eq(entryChips.label, label)));
+
+  if (matching.length === 0) return { items: [], hasNext: false };
+
+  const ids = matching.map((r) => r.entry_id);
+
+  const rows = await db
+    .select({
+      id: entries.id,
+      slug: entries.slug,
+      title: entries.title,
+      bodyMd: entries.body_md,
+      backdropUrl: entries.backdrop_url,
+      manualBackdropUrl: entries.manual_backdrop_url,
+      publishedAt: entries.published_at,
+      filmTitle: films.title,
+      filmTitleZh: films.title_zh,
+      filmDirector: films.director,
+      filmRuntime: films.runtime_min,
+      filmReleaseYear: films.release_year,
+      filmPosterUrl: films.poster_url,
+    })
+    .from(entries)
+    .leftJoin(films, eq(entries.primary_film_id, films.id))
+    .where(and(eq(entries.is_published, true), inArray(entries.id, ids)))
+    .orderBy(desc(entries.published_at))
+    .limit(limit + 1)
+    .offset(offset);
+
+  if (rows.length === 0) return { items: [], hasNext: false };
+
+  const hasNext = rows.length > limit;
+  const sliced = hasNext ? rows.slice(0, limit) : rows;
+
+  const allChips = await db
+    .select()
+    .from(entryChips)
+    .where(inArray(entryChips.entry_id, sliced.map((r) => r.id)));
+
+  return {
+    items: sliced.map((r) => ({
+      id: r.id,
+      slug: r.slug,
+      title: r.title,
+      backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
+      publishedAt: r.publishedAt,
+      snippet: toExcerpt(r.bodyMd ?? ""),
+      film: r.filmTitle
+        ? {
+            title: r.filmTitle,
+            titleZh: r.filmTitleZh,
+            director: r.filmDirector,
+            runtimeMin: r.filmRuntime,
+            posterUrl: r.filmPosterUrl,
+            releaseYear: r.filmReleaseYear,
+          }
+        : null,
+      chips: allChips
+        .filter((c) => c.entry_id === r.id)
+        .map((c) => ({ label: c.label, kind: c.kind, isLive: c.is_live })),
+    })),
+    hasNext,
+  };
+}
+
 export async function getEntriesByGenre(
   genreLabel: string,
   limit = 8,

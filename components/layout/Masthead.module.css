@@ -84,13 +84,31 @@
 }
 
 .navLink {
+  position: relative;
   font-size: 13px;
   color: var(--ink);
   transition: color 0.15s;
 }
 
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
 .navLink:hover {
   color: var(--gold);
+}
+
+.navLink:hover::after {
+  transform: scaleX(1);
 }
 
 .navLink:visited {
@@ -101,6 +119,11 @@
 .navLinkActive,
 .navLinkActive:visited {
   color: var(--gold);
+}
+
+.navLinkActive::after {
+  background: var(--gold);
+  transform: scaleX(1);
 }
 
 /* Tablet: reduce masthead */

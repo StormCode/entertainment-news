@@ -17,9 +17,11 @@ interface Props {
   initialData: { items: SerializedEntry[]; hasNext: boolean };
   initialPage: number;
   slug: string;
+  apiBase?: string;
+  basePath?: string;
 }
 
-export function GenreGridClient({ initialData, initialPage, slug }: Props) {
+export function GenreGridClient({ initialData, initialPage, slug, apiBase = "/api/genres", basePath = "/genres" }: Props) {
   const searchParams = useSearchParams();
   const [data, setData] = useState(initialData);
   const [isPending, startTransition] = useTransition();
@@ -34,11 +36,11 @@ export function GenreGridClient({ initialData, initialPage, slug }: Props) {
     prevPage.current = currentPage;
     shouldScrollRef.current = true;
     startTransition(async () => {
-      const res = await fetch(`/api/genres/${slug}?page=${currentPage}`);
+      const res = await fetch(`${apiBase}/${slug}?page=${currentPage}`);
       const json = await res.json();
       setData(json);
     });
-  }, [currentPage, slug]);
+  }, [currentPage, slug, apiBase]);
 
   useEffect(() => {
     if (!shouldScrollRef.current) return;
@@ -61,7 +63,7 @@ export function GenreGridClient({ initialData, initialPage, slug }: Props) {
           <EntryCard key={entry.id} entry={entry} />
         ))}
       </div>
-      <Pagination currentPage={currentPage} hasNext={data.hasNext} basePath={`/genres/${slug}`} />
+      <Pagination currentPage={currentPage} hasNext={data.hasNext} basePath={`${basePath}/${slug}`} />
     </>
   );
 }
