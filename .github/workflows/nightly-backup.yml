@@ -37,6 +37,7 @@ jobs:
             --no-owner \
             --no-acl \
             --format=plain \
+            --exclude-extension=pg_session_jwt \
           | gzip > "$DUMP_FILE"
           SIZE=$(du -sh "$DUMP_FILE" | cut -f1)
           echo "Dump size: $SIZE"
