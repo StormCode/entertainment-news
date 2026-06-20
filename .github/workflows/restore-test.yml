@@ -73,15 +73,16 @@ jobs:
           gunzip -c /tmp/restore-test.sql.gz | head -5 || true
           echo "--- restoring ---"
           gunzip -c /tmp/restore-test.sql.gz \
-            | psql -h localhost -U postgres -d restore_test \
+            | /usr/lib/postgresql/18/bin/psql -h localhost -U postgres -d restore_test \
                 --set=ON_ERROR_STOP=1
           echo "Restored $BACKUP_KEY ($SIZE) into test Postgres"
           echo "Tables after restore:"
-          psql -h localhost -U postgres -d restore_test -c "\dt" 2>&1 || true
+          /usr/lib/postgresql/18/bin/psql -h localhost -U postgres -d restore_test -c "\dt" 2>&1 || true
 
       - name: Smoke-check restore
         env:
           RESTORE_TEST_URL: postgresql://postgres:testpass@localhost:5432/restore_test
+          PATH: /usr/lib/postgresql/18/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         run: |
           chmod +x scripts/verify-restore.sh
           ./scripts/verify-restore.sh --check-only

@@ -32,7 +32,7 @@ jobs:
           DUMP_FILE="/tmp/afterhours-${STAMP}.sql.gz"
           echo "STAMP=${STAMP}" >> "$GITHUB_ENV"
           echo "DUMP_FILE=${DUMP_FILE}" >> "$GITHUB_ENV"
-          pg_dump \
+          /usr/lib/postgresql/18/bin/pg_dump \
             "${{ secrets.DATABASE_URL_DIRECT }}" \
             --no-owner \
             --no-acl \
