@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { entries, films, entryChips } from "@/db/schema";
-import { eq, desc, and, inArray, ne, or, ilike } from "drizzle-orm";
+import { eq, desc, asc, and, inArray, ne, or, ilike, lt, gt } from "drizzle-orm";
 import { toExcerpt } from "@/lib/excerpt";
 
 export type EntryWithFilm = {
@@ -390,6 +390,116 @@ export async function getEntriesByDirector(director: string, excludeEntryId: num
       : null,
     chips: [],
   }));
+}
+
+export async function getRelatedEntries(
+  entryId: number,
+  chipLabels: string[],
+  limit = 4,
+): Promise<EntryWithFilm[]> {
+  const mapRow = (r: {
+    id: number; slug: string; title: string; bodyMd: string;
+    backdropUrl: string | null; manualBackdropUrl: string | null;
+    publishedAt: Date | null; filmTitle: string | null; filmTitleZh: string | null;
+    filmDirector: string | null; filmRuntimeMin: number | null;
+    filmReleaseYear: number | null; filmPosterUrl: string | null;
+  }): EntryWithFilm => ({
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    backdropUrl: r.manualBackdropUrl ?? r.backdropUrl,
+    publishedAt: r.publishedAt,
+    snippet: toExcerpt(r.bodyMd ?? ""),
+    film: r.filmTitle
+      ? { title: r.filmTitle, titleZh: r.filmTitleZh, director: r.filmDirector,
+          runtimeMin: r.filmRuntimeMin, posterUrl: r.filmPosterUrl, releaseYear: r.filmReleaseYear }
+      : null,
+    chips: [],
+  });
+
+  if (chipLabels.length > 0) {
+    const matched = await db
+      .selectDistinct({ entry_id: entryChips.entry_id })
+      .from(entryChips)
+      .where(and(inArray(entryChips.label, chipLabels), ne(entryChips.entry_id, entryId)));
+
+    const ids = matched.map((r) => r.entry_id);
+    if (ids.length > 0) {
+      const rows = await db.select({
+        id: entries.id, slug: entries.slug, title: entries.title, bodyMd: entries.body_md,
+        backdropUrl: entries.backdrop_url, manualBackdropUrl: entries.manual_backdrop_url,
+        publishedAt: entries.published_at, filmTitle: films.title, filmTitleZh: films.title_zh,
+        filmDirector: films.director, filmRuntimeMin: films.runtime_min,
+        filmReleaseYear: films.release_year, filmPosterUrl: films.poster_url,
+      })
+      .from(entries)
+      .leftJoin(films, eq(entries.primary_film_id, films.id))
+      .where(and(eq(entries.is_published, true), inArray(entries.id, ids)))
+      .orderBy(desc(entries.published_at))
+      .limit(limit);
+      if (rows.length >= limit) return rows.map(mapRow);
+    }
+  }
+
+  // fallback: most recent published entries
+  const rows = await db.select({
+    id: entries.id, slug: entries.slug, title: entries.title, bodyMd: entries.body_md,
+    backdropUrl: entries.backdrop_url, manualBackdropUrl: entries.manual_backdrop_url,
+    publishedAt: entries.published_at, filmTitle: films.title, filmTitleZh: films.title_zh,
+    filmDirector: films.director, filmRuntimeMin: films.runtime_min,
+    filmReleaseYear: films.release_year, filmPosterUrl: films.poster_url,
+  })
+  .from(entries)
+  .leftJoin(films, eq(entries.primary_film_id, films.id))
+  .where(and(eq(entries.is_published, true), ne(entries.id, entryId)))
+  .orderBy(desc(entries.published_at))
+  .limit(limit);
+
+  return rows.map(mapRow);
+}
+
+export type AdjacentEntry = {
+  slug: string;
+  entryTitle: string;
+  filmTitle: string;
+};
+
+export async function getAdjacentEntries(publishedAt: Date): Promise<{
+  prev: AdjacentEntry | null;
+  next: AdjacentEntry | null;
+}> {
+  const pick = (r: { slug: string; entryTitle: string; filmTitle: string | null; filmTitleZh: string | null; }): AdjacentEntry => ({
+    slug: r.slug,
+    entryTitle: r.entryTitle,
+    filmTitle: r.filmTitleZh ?? r.filmTitle ?? r.entryTitle,
+  });
+
+  const fields = {
+    slug: entries.slug,
+    entryTitle: entries.title,
+    filmTitle: films.title,
+    filmTitleZh: films.title_zh,
+  };
+
+  const [prevRows, nextRows] = await Promise.all([
+    db.select(fields)
+      .from(entries)
+      .leftJoin(films, eq(entries.primary_film_id, films.id))
+      .where(and(eq(entries.is_published, true), lt(entries.published_at, publishedAt)))
+      .orderBy(desc(entries.published_at))
+      .limit(1),
+    db.select(fields)
+      .from(entries)
+      .leftJoin(films, eq(entries.primary_film_id, films.id))
+      .where(and(eq(entries.is_published, true), gt(entries.published_at, publishedAt)))
+      .orderBy(asc(entries.published_at))
+      .limit(1),
+  ]);
+
+  return {
+    prev: prevRows[0] ? pick(prevRows[0]) : null,
+    next: nextRows[0] ? pick(nextRows[0]) : null,
+  };
 }
 
 export async function searchEntries(query: string): Promise<EntryWithFilm[]> {

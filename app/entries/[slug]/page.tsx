@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { Masthead } from "@/components/layout/Masthead";
 import { Chip } from "@/components/ui/Chip";
-import { getEntryBySlug, getEntriesByDirector } from "@/lib/queries/entries";
-import { EntryCard } from "@/components/entries/EntryCard";
+import { getEntryBySlug, getRelatedEntries, getAdjacentEntries } from "@/lib/queries/entries";
+import Image from "next/image";
 import { renderMarkdown, wordCount } from "@/lib/markdown/render";
 import { LazyReveal } from "@/components/ui/LazyReveal";
 import { ReadingProgress } from "./ReadingProgress";
@@ -57,9 +58,11 @@ export default async function EntryPage({ params }: PageProps) {
   const filmTitle = film?.title_zh ?? film?.title ?? entry.title;
   const backdropUrl = entry.backdrop_url ?? entry.manual_backdrop_url;
 
-  const relatedEntries = film?.director
-    ? await getEntriesByDirector(film.director, entry.id)
-    : [];
+  const chipLabels = chips.map((c) => c.label);
+  const [relatedEntries, adjacent] = await Promise.all([
+    getRelatedEntries(entry.id, chipLabels),
+    entry.published_at ? getAdjacentEntries(entry.published_at) : Promise.resolve({ prev: null, next: null }),
+  ]);
   const imageCredit = entry.image_credit ?? null;
 
   const { html: bodyHtml, headings } = await renderMarkdown(entry.body_md);
@@ -139,17 +142,58 @@ export default async function EntryPage({ params }: PageProps) {
 
       {relatedEntries.length > 0 && (
         <LazyReveal>
-          <section className={styles.related} aria-label="同導演其他文章">
-            <h2 className={styles.relatedHeading}>
-              {film?.director} 的其他文章
-            </h2>
-            <div className={styles.relatedGrid}>
-              {relatedEntries.map((e) => (
-                <EntryCard key={e.id} entry={e} />
-              ))}
-            </div>
+          <section className={styles.related} aria-label="相關文章">
+            <h2 className={styles.relatedHeading}>相關文章</h2>
+            <ul className={styles.relatedList} role="list">
+              {relatedEntries.map((e) => {
+                const filmTitle = e.film?.titleZh ?? e.film?.title ?? e.title;
+                const posterUrl = e.film?.posterUrl ?? null;
+                return (
+                  <li key={e.id}>
+                    <Link href={`/entries/${e.slug}`} className={styles.relatedItem}>
+                      {posterUrl ? (
+                        <Image
+                          src={posterUrl}
+                          alt={filmTitle}
+                          width={52}
+                          height={78}
+                          className={styles.relatedPoster}
+                        />
+                      ) : (
+                        <div className={styles.relatedPosterPlaceholder} />
+                      )}
+                      <div className={styles.relatedContent}>
+                        <span className={styles.relatedFilmTitle}>《{filmTitle}》</span>
+                        <span className={styles.relatedEntryTitle}>{e.title}</span>
+                      </div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </section>
         </LazyReveal>
+      )}
+
+      {(adjacent.prev || adjacent.next) && (
+        <nav className={styles.adjacentNav} aria-label="上下篇導覽">
+          <div className={styles.adjacentInner}>
+            {adjacent.prev ? (
+              <Link href={`/entries/${adjacent.prev.slug}`} className={`${styles.adjacentLink} ${styles.adjacentPrev}`}>
+                <span className={styles.adjacentDirection}>← 上一篇</span>
+                <span className={styles.adjacentFilm}>《{adjacent.prev.filmTitle}》</span>
+                <span className={styles.adjacentEntry}>{adjacent.prev.entryTitle}</span>
+              </Link>
+            ) : <div />}
+            {adjacent.next ? (
+              <Link href={`/entries/${adjacent.next.slug}`} className={`${styles.adjacentLink} ${styles.adjacentNext}`}>
+                <span className={styles.adjacentDirection}>下一篇 →</span>
+                <span className={styles.adjacentFilm}>《{adjacent.next.filmTitle}》</span>
+                <span className={styles.adjacentEntry}>{adjacent.next.entryTitle}</span>
+              </Link>
+            ) : <div />}
+          </div>
+        </nav>
       )}
 
       <ArticleControls />
