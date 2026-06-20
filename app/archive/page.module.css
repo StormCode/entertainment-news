@@ -1,0 +1,164 @@
+.main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 40px 80px;
+}
+
+.pageHeader {
+  margin-bottom: 56px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 24px;
+}
+
+.heading {
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--ink-strong);
+  margin: 0 0 6px;
+  line-height: 1;
+}
+
+.sub {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.decades {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.decade {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0 32px;
+  align-items: start;
+}
+
+.decadeLabel {
+  font-family: var(--font-sans-tc), "Noto Sans TC", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin: 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  position: sticky;
+  top: 16px;
+}
+
+.entryList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  color: var(--ink);
+  transition: color 0.15s;
+}
+
+.row:hover {
+  color: var(--gold);
+}
+
+.filmInfo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.filmTitle {
+  font-family: var(--font-serif-tc), "Noto Serif TC", serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: inherit;
+  white-space: nowrap;
+}
+
+.director {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.row:hover .director {
+  color: var(--gold);
+}
+
+.year {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.row:hover .year {
+  color: var(--gold);
+}
+
+.entryTitle {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 260px;
+  transition: color 0.15s;
+}
+
+.row:hover .entryTitle {
+  color: var(--gold);
+}
+
+.empty {
+  color: var(--muted);
+  font-style: italic;
+}
+
+@media (max-width: 699px) {
+  .main { padding: 32px 16px 64px; }
+  .heading { font-size: 28px; }
+
+  .decade {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .decadeLabel {
+    position: static;
+    padding-top: 12px;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
+
+  .filmInfo { flex-wrap: wrap; gap: 6px; }
+
+  .entryTitle {
+    text-align: left;
+    max-width: 100%;
+  }
+}
