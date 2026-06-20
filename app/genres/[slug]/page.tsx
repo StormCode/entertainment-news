@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Masthead } from "@/components/layout/Masthead";
-import { EntryCard } from "@/components/entries/EntryCard";
 import { GENRES, GENRE_SLUG_TO_LABEL } from "@/lib/constants/genres";
 import { getEntriesByGenre } from "@/lib/queries/entries";
-import { Pagination } from "@/components/ui/Pagination";
+import { GenreGridClient } from "@/components/genres/GenreGridClient";
 import { LazyReveal } from "@/components/ui/LazyReveal";
 import styles from "./page.module.css";
 
@@ -34,12 +34,20 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
   const { page: pageParam } = await searchParams;
   const currentPage = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
 
-  let items: Awaited<ReturnType<typeof getEntriesByGenre>>["items"] = [];
-  let hasNext = false;
+  let initialData: { items: Array<Omit<Awaited<ReturnType<typeof getEntriesByGenre>>["items"][number], "publishedAt"> & { publishedAt: string | null }>; hasNext: boolean } = {
+    items: [],
+    hasNext: false,
+  };
+
   try {
     const result = await getEntriesByGenre(label, PAGE_SIZE, (currentPage - 1) * PAGE_SIZE);
-    items = result.items;
-    hasNext = result.hasNext;
+    initialData = {
+      items: result.items.map((item) => ({
+        ...item,
+        publishedAt: item.publishedAt?.toISOString() ?? null,
+      })),
+      hasNext: result.hasNext,
+    };
   } catch {
     // DB unavailable — show empty state
   }
@@ -56,16 +64,17 @@ export default async function GenrePage({ params, searchParams }: PageProps) {
           </Link>
           <h1 className={styles.heading}>{label}</h1>
         </div>
-        {items.length === 0 ? (
+        {initialData.items.length === 0 ? (
           <p className={styles.empty}>此類型尚無文章。</p>
         ) : (
           <LazyReveal>
-            <div className={styles.grid}>
-              {items.map((entry) => (
-                <EntryCard key={entry.id} entry={entry} />
-              ))}
-            </div>
-            <Pagination currentPage={currentPage} hasNext={hasNext} basePath={`/genres/${slug}`} />
+            <Suspense fallback={<div className={styles.grid} />}>
+              <GenreGridClient
+                initialData={initialData}
+                initialPage={currentPage}
+                slug={slug}
+              />
+            </Suspense>
           </LazyReveal>
         )}
       </main>

@@ -15,21 +15,21 @@ export function Pagination({ currentPage, hasNext, basePath }: Props) {
   return (
     <nav className={styles.pagination} aria-label="分頁導航">
       {hasPrev ? (
-        <Link href={prevHref} className={styles.btn}>
-          ← 上一頁
+        <Link href={prevHref} className={styles.btn} aria-label="上一頁" scroll={false}>
+          ←
         </Link>
       ) : (
-        <span className={`${styles.btn} ${styles.disabled}`} aria-disabled="true">
-          ← 上一頁
+        <span className={`${styles.btn} ${styles.disabled}`} aria-disabled="true" aria-label="上一頁">
+          ←
         </span>
       )}
       {hasNext ? (
-        <Link href={nextHref} className={styles.btn}>
-          下一頁 →
+        <Link href={nextHref} className={styles.btn} aria-label="下一頁" scroll={false}>
+          →
         </Link>
       ) : (
-        <span className={`${styles.btn} ${styles.disabled}`} aria-disabled="true">
-          下一頁 →
+        <span className={`${styles.btn} ${styles.disabled}`} aria-disabled="true" aria-label="下一頁">
+          →
         </span>
       )}
     </nav>
