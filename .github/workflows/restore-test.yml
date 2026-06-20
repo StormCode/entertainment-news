@@ -59,10 +59,16 @@ jobs:
         env:
           PGPASSWORD: testpass
         run: |
+          echo "Dump file size: $(du -sh /tmp/restore-test.sql.gz)"
+          echo "First 5 lines of dump (uncompressed):"
+          gunzip -c /tmp/restore-test.sql.gz | head -5 || true
+          echo "--- restoring ---"
           gunzip -c /tmp/restore-test.sql.gz \
             | psql -h localhost -U postgres -d restore_test \
                 --set=ON_ERROR_STOP=1
           echo "Restored $BACKUP_KEY ($SIZE) into test Postgres"
+          echo "Tables after restore:"
+          psql -h localhost -U postgres -d restore_test -c "\dt" 2>&1 || true
 
       - name: Smoke-check restore
         env:
