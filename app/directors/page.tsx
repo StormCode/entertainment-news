@@ -39,7 +39,7 @@ export default async function DirectorsPage({ searchParams }: PageProps) {
               <path d="M11 4L6 9L11 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </Link>
-          <Link href="/" className={styles.backLabel}>首頁</Link>
+          <h1 className={styles.heading}>導演</h1>
         </div>
 
         {initialData.items.length === 0 ? (
